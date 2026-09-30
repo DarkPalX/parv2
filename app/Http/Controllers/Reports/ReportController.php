@@ -1,0 +1,566 @@
+<?php
+
+namespace App\Http\Controllers\Reports;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
+use App\accountabilityHeaders;
+use App\parDetails;
+use Auth;
+
+use App\Contractor;
+
+class ReportController extends Controller {
+
+    public function par_personnel(){
+
+        $employees   = file_get_contents("http://172.16.20.27/parv2/api/add-issuance.php");
+
+        return view('reports.personnel',compact('employees'));
+    }
+
+    public function par_department(){
+
+        $departments = file_get_contents("http://172.16.20.27/parv2/api/dept-api.php");
+
+        return view('reports.department',compact('departments'));
+    }
+
+    public function index()
+    {
+        return view('reports.index');
+    }
+
+    public function download_all()
+    {
+        
+        return view('reports.download_all');
+    }
+
+    public function notes(Request $request,$id)
+    {        
+        // if($request->other_specs==null) {
+            accountabilityHeaders::findOrfail($id)->update(['notes' => $request->notes]);
+            // dd($request);
+        // }
+    }
+
+    public function contractor()
+    {
+        $contractors = Contractor::paginate(10);
+
+        return view('reports.contractor',compact('contractors'));
+    }
+
+    public function per_department()
+    {
+        $qry = null;
+        // $dept = parDetails::where('status', 'OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+
+ 
+        $deptUrl = env('API_URL') . "hris-get-departments-api.php";
+        // $deptUrl = "http://172.16.20.12/parv2/api/hris-get-departments-api.php";
+        $deptData = @file_get_contents($deptUrl);
+        $rawDepts = json_decode($deptData, true) ?: [];
+ 
+        $dept = collect($rawDepts)->map(function($deptName) {
+            return (object) ['dept' => $deptName];
+        });
+ 
+        if (isset($_GET['dept'])) {
+            if (strlen($_GET['dept']) > 3) {
+                // Call your API using file_get_contents
+                $url = env('API_URL') . "hris-get-employees-api.php?dept=" . urlencode($_GET['dept']);
+                // $url = "http://172.16.20.12/parv2/api/hris-get-employees-api.php?dept=" . urlencode($_GET['dept']);
+                $data = file_get_contents($url);
+                // Decode directly into an array of IDs
+                $employeeIds = json_decode($data, true) ?: [];
+ 
+                // dd($employeeIds);
+ 
+                // Query using whereIn for the list of IDs
+                $qry = parDetails::where('status', 'OPEN')
+                    ->whereIn('employee_id', $employeeIds)
+                    ->orderBy('accountable')
+                    ->paginate(30);
+            } 
+            else {
+                $qry = parDetails::where('status', 'OPEN')->orderBy('accountable')->paginate(30);
+            }
+        }
+ 
+        return view('reports.per_department', compact('qry', 'dept'));
+    }
+
+    // public function per_department()
+    // {
+    //     $qry = null;
+
+    //     // 1. Fetch the departments from the new standalone API endpoint
+    //     $deptUrl = env('APP_URL') . "/parv2_latest/api/hris-get-departments-api.php";
+    //     $deptData = @file_get_contents($deptUrl);
+    //     $rawDepts = json_decode($deptData, true) ?: [];
+
+    //     // Map strings into objects so Blade template engine's `$de->dept` won't break
+    //     $dept = collect($rawDepts)->map(function($deptName) {
+    //         return (object) ['dept' => $deptName];
+    //     });
+
+    //     // 2. Filter employees if specific departments are selected in the request
+    //     if (isset($_GET['dept']) && is_array($_GET['dept']) && count($_GET['dept']) > 0) {
+            
+    //         $queryString = http_build_query(['dept' => $_GET['dept']]);
+    //         $url = env('APP_URL') . "/parv2_latest/api/hris-get-employees-api.php?" . $queryString;
+            
+    //         $data = @file_get_contents($url);
+    //         $employeeIds = json_decode($data, true) ?: [];
+
+    //         $qry = parDetails::where('status', 'OPEN')
+    //             ->whereIn('employee_id', $employeeIds)
+    //             ->orderBy('accountable')
+    //             ->paginate(30);
+                
+    //     } else {
+    //         // Fallback option if no departments are explicitly selected
+    //         $qry = parDetails::where('status', 'OPEN')->orderBy('accountable')->paginate(30);
+    //     }
+
+    //     return view('reports.per_department', compact('qry', 'dept'));
+    // }
+
+    // public function per_department()
+    // {
+    //     $qry = null;
+    //     $dept = parDetails::where('status', 'OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+
+    //     if (isset($_GET['dept']) && is_array($_GET['dept']) && count($_GET['dept']) > 0) {
+            
+    //         // Build the query parameter string for multiple items (e.g., ?dept[]=IT&dept[]=HR)
+    //         $queryString = http_build_query(['dept' => $_GET['dept']]);
+            
+    //         // Call your API using file_get_contents with the formatted query parameters
+    //         $url = env('APP_URL') . "/parv2_latest/api/hris-get-employees-api.php?" . $queryString;
+            
+    //         $data = file_get_contents($url);
+            
+    //         // Decode directly into an array of IDs
+    //         $employeeIds = json_decode($data, true) ?: [];
+
+    //         // Query using whereIn for the list of Employee IDs found
+    //         $qry = parDetails::where('status', 'OPEN')
+    //             ->whereIn('employee_id', $employeeIds)
+    //             ->orderBy('accountable')
+    //             ->paginate(30);
+                
+    //     } else {
+    //         // Fallback option if no departments are selected
+    //         $qry = parDetails::where('status', 'OPEN')->orderBy('accountable')->paginate(30);
+    //     }
+
+    //     return view('reports.per_department', compact('qry', 'dept'));
+    // }
+
+    // public function per_department()
+    // {
+    //     $qry = null;
+    //     $dept = parDetails::where('status', 'OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+
+    //     if (isset($_GET['dept'])) {
+    //         if (strlen($_GET['dept']) > 3) {
+                
+    //             // Call your API using file_get_contents
+    //             $url = env('APP_URL') . "/parv2_latest/api/hris-get-employees-api.php?dept=" . urlencode($_GET['dept']);
+    //             // $url = "" . env('APP_URL') . "/parv2/api/hris-get-employees-api.php?dept=" . urlencode($_GET['dept']);
+    //             $data = file_get_contents($url);
+                
+    //             // Decode directly into an array of IDs
+    //             $employeeIds = json_decode($data, true) ?: [];
+
+    //             // dd($employeeIds);
+
+    //             // Query using whereIn for the list of IDs
+    //             $qry = parDetails::where('status', 'OPEN')
+    //                 ->whereIn('employee_id', $employeeIds)
+    //                 ->orderBy('accountable')
+    //                 ->paginate(30);
+    //         } 
+    //         else {
+    //             $qry = parDetails::where('status', 'OPEN')->orderBy('accountable')->paginate(30);
+    //         }
+    //     }
+
+    //     return view('reports.per_department', compact('qry', 'dept'));
+    // }
+    
+    public function parv1_transactions()
+    {
+        $perPage = 50;
+        $page = request()->get('page', 1);
+        $offset = ($page - 1) * $perPage;
+
+        // Base SQL
+        // WITHOUT NULL VALUES
+        $sql = "SELECT
+                    e.empid,
+                    e.fullname,
+                    e.dept,
+                    ah.id AS headerId,
+                    i.id AS itemId,
+                    i.name AS item_name,
+                    i.qty AS item_qty,
+                    i.price AS item_price,
+                    i.tracking AS item_tracking,
+                    i.serialNo,
+                    ad.status,
+                    ah.* 
+                FROM parv1_employee e
+                JOIN parv1_accountabilityheader ah
+                    ON ah.employeeId = e.id
+                JOIN parv1_accountabilitydetail ad
+                    ON ad.headerId = ah.id
+                JOIN parv1_items i
+                    ON i.id = ad.Item
+                WHERE ah.docStatus = 'POSTED' AND
+                    ad.status = 'OPEN'";
+
+        // Department filter
+        $bindings = [];
+        if (isset($_GET['dept']) && $_GET['dept'] !== 'ALL') {
+            $sql .= " AND e.dept = ?";
+            $bindings[] = $_GET['dept'];
+        }
+        
+        // Search filter
+        if (!empty($_GET['search'])) {
+            $search = $_GET['search'];
+            $sql .= " AND (e.empid LIKE ? OR e.fullname LIKE ? OR i.tracking LIKE ? OR ah.refcode LIKE ?)";
+            $bindings[] = "%$search%";
+            $bindings[] = "%$search%";
+            $bindings[] = "%$search%";
+            $bindings[] = "%$search%";
+        }
+
+        // Add SQL Server pagination
+        $sql .= " ORDER BY e.fullname, i.name
+                OFFSET $offset ROWS
+                FETCH NEXT $perPage ROWS ONLY";
+
+        // Execute raw SQL
+        $results = DB::select($sql, $bindings);
+
+        // ---------------------------
+        // FIX total count for pagination
+        // ---------------------------
+        $totalSql = "SELECT COUNT(DISTINCT ad.id) AS total
+                    FROM parv1_employee e
+                    JOIN parv1_accountabilityheader ah
+                        ON ah.employeeId = e.id
+                    JOIN parv1_accountabilitydetail ad
+                        ON ad.headerId = ah.id
+                    JOIN parv1_items i
+                        ON i.id = ad.Item
+                    WHERE ah.docStatus = 'POSTED' AND
+                        ad.status = 'OPEN'";
+
+        $totalBindings = [];
+
+        // Apply same filters to total count
+        if (isset($_GET['dept']) && $_GET['dept'] !== 'ALL') {
+            $totalSql .= " AND e.dept = ?";
+            $totalBindings[] = $_GET['dept'];
+        }
+
+        if (!empty($_GET['search'])) {
+            $totalSql .= " AND (e.empid LIKE ? OR e.fullname LIKE ? OR ah.id LIKE ?)";
+            $totalBindings[] = "%$search%";
+            $totalBindings[] = "%$search%";
+            $totalBindings[] = "%$search%";
+        }
+
+        $totalResult = DB::select($totalSql, $totalBindings);
+        $total = $totalResult[0]->total ?? 0;
+
+        // Wrap results in a paginator
+        $qry = new LengthAwarePaginator(
+            collect($results),
+            $total,
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        // Get distinct departments for filter dropdown
+        $dept = parDetails::where('status','OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+
+        // $dept = DB::table('parv1_employee as e')
+        //     ->join('parv1_accountabilityheader as ah', 'ah.employeeId', '=', 'e.id')
+        //     ->join('parv1_accountabilitydetail as ad', 'ad.headerId', '=', 'ah.id')
+        //     ->where('ad.status', 'OPEN')
+        //     ->select('e.dept')
+        //     ->distinct()
+        //     ->orderBy('e.dept')
+        //     ->get();
+
+        // dd($qry);
+
+        return view('reports.parv1_transactions', compact('qry', 'dept'));
+    }
+
+    
+    // public function parv1_transactions()
+    // {
+    //     $perPage = 50;
+    //     $page = request()->get('page', 1);
+    //     $offset = ($page - 1) * $perPage;
+
+    //     // Base SQL
+    //     // WITHOUT NULL VALUES
+    //     $sql = "SELECT
+    //                 e.empid,
+    //                 e.fullname,
+    //                 e.dept,
+    //                 ah.id AS headerId,
+    //                 i.id AS itemId,
+    //                 i.name AS item_name,
+    //                 i.serialNo,
+    //                 ad.status,
+    //                 ah.* 
+    //             FROM parv1_employee e
+    //             JOIN parv1_accountabilityheader ah
+    //                 ON ah.employeeId = e.id
+    //             JOIN parv1_accountabilitydetail ad
+    //                 ON ad.headerId = ah.id
+    //             JOIN parv1_items i
+    //                 ON i.id = ad.Item
+    //             WHERE ah.docStatus = 'POSTED' AND
+    //                  ad.status = 'OPEN'";
+
+    //     // Department filter
+    //     $bindings = [];
+    //     if (isset($_GET['dept']) && $_GET['dept'] !== 'ALL') {
+    //         $sql .= " AND e.dept = ?";
+    //         $bindings[] = $_GET['dept'];
+    //     }
+        
+    //     if (!empty($_GET['search'])) {
+    //         $search = $_GET['search'];
+    //         $sql .= " AND (e.empid LIKE ? OR e.fullname LIKE ? OR ah.id LIKE ?)";
+    //         $bindings[] = "%$search%";
+    //         $bindings[] = "%$search%";
+    //         $bindings[] = "%$search%";
+    //     }
+
+    //     // Add SQL Server pagination
+    //     $sql .= " ORDER BY e.fullname, i.name
+    //             OFFSET $offset ROWS
+    //             FETCH NEXT $perPage ROWS ONLY";
+
+    //     // Execute raw SQL
+    //     $results = DB::select($sql, $bindings);
+
+    //     // Wrap results in a paginator
+    //     $total = DB::table('parv1_accountabilitydetail as ad')
+    //         ->join('parv1_accountabilityheader as ah', 'ah.id', '=', 'ad.headerId')
+    //         ->join('parv1_employee as e', 'e.id', '=', 'ah.employeeId')
+    //         ->where('ad.status', 'OPEN')
+    //         ->when(isset($_GET['dept']) && $_GET['dept'] !== 'ALL', function($q){
+    //             $q->where('e.dept', $_GET['dept']);
+    //         })
+    //         ->count();
+
+    //     $qry = new LengthAwarePaginator(
+    //         collect($results),
+    //         $total,
+    //         $perPage,
+    //         $page,
+    //         ['path' => request()->url(), 'query' => request()->query()]
+    //     );
+
+    //     // Get distinct departments for filter dropdown
+    //     $dept = parDetails::where('status','OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+
+    //     // $dept = DB::table('parv1_employee as e')
+    //     //     ->join('parv1_accountabilityheader as ah', 'ah.employeeId', '=', 'e.id')
+    //     //     ->join('parv1_accountabilitydetail as ad', 'ad.headerId', '=', 'ah.id')
+    //     //     ->where('ad.status', 'OPEN')
+    //     //     ->select('e.dept')
+    //     //     ->distinct()
+    //     //     ->orderBy('e.dept')
+    //     //     ->get();
+
+    //     dd($qry);
+
+    //     return view('reports.parv1_transactions', compact('qry', 'dept'));
+    // }
+
+
+    // public function parv1_transactions()
+    // {
+    //     $qry = null;
+    //     $dept = parDetails::where('status','OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+    //     if(isset($_GET['dept'])){
+    //         if(strlen($_GET['dept']) > 3){
+    //             $qry = parDetails::where('status','OPEN')->where('dept',$_GET['dept'])->orderBy('accountable')->paginate(30);
+    //         }
+    //         else{
+    //             $qry = parDetails::where('status','OPEN')->orderBy('accountable')->paginate(30);
+    //         }
+          
+    //     }
+
+    //     return view('reports.parv1_transactions',compact('qry','dept'));
+    // }
+
+    // NEW
+    public function individual()
+    {
+        $user_dept = urlencode(auth()->user()->dept ?? '');
+        // dd($user_dept);
+
+        $personnel  = json_decode(file_get_contents("http://172.16.20.28/parv2/api/hris-api.php?type=dept_emps&dept=".$user_dept));
+
+        $qry = null;
+        $dept = parDetails::where('status','OPEN')->select('dept')->distinct()->orderBy('dept')->get();
+        $param = $_GET['name'] ?? null;
+        $par_status = $_GET['par_status'] ?? 'POSTED';
+        $item_status = $_GET['item_status'] ?? 'OPEN';
+
+
+        if(isset($param)){
+            if(strlen($param) > 3 && $param != 'DEPT'){
+                $qry = parDetails::where('status',$item_status)
+                    ->where('accountable',$param)
+                    ->orderBy('accountable')
+                    ->paginate(30);
+            }
+            else if ($param == 'DEPT') {
+                $qry = parDetails::where('status',$item_status)
+                    ->where('accountable', auth()->user()->dept)
+                    ->orderBy('accountable')
+                    ->paginate(30);
+            }
+            else{
+                $qry = parDetails::where('status',$item_status)
+                    ->where('dept', auth()->user()->dept)
+                    ->orderBy('accountable')->paginate(30);
+            }
+
+        }
+        
+        return view('reports.individual-summary',compact('qry','dept', 'personnel'));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // public function generateDepartment(Request $req){
+        
+    //     if($req->ajax()){
+
+    //         $depts = reportDepartments::where('dept_id','=',$req->search)->get();
+
+    //     return view('reports.result-department-par',compact('depts',$depts));
+
+    //     }  
+    // }
+
+
+
+    // public function ictItems(){
+
+    //     $ict = parDetails::where('isict','=','1')->get();
+
+    //     return view('reports.ict-items',compact('ict'));
+
+    // }
+
+    // public function ItemsWithOutPar(){
+
+    //     $items = Items::whereNotIn('id', function($query){ $query->select('item')->from('accountabilityDetails'); } )->get();
+
+    //     return view('reports.items_without_par',compact('items',$items));
+    // }
+
+
+
+
+    ## EXPORT
+
+    // public function exportDepartmentPar(Request $req) {
+    //     $today = new Carbon();
+    //     return Excel::download(new DepartmentExport($req), 'Department_Par '.$today.'.xlsx');
+    // }
+
+    // public function exportPersonnelPar(Request $req){
+    //    $today = new Carbon();
+    //     return Excel::download(new PersonnelExport($req), 'Personnel_Par '.$today.'.xlsx');
+    // }
+
+    // public function exportSavedPar(Request $req) {
+    //     $today = new Carbon();
+    //     return Excel::download(new SavedParExport($req), 'Saved_Par '.$today.'.xlsx');
+    // }
+
+    // public function exportPostedPar(Request $req){
+    //     $today = new Carbon();
+    //     return Excel::download(new PostedParExport($req), 'Posted_Par '.$today.'.xlsx');
+    // }
+
+    // public function exportCancelledPar(Request $req){
+    //     $today = new Carbon();
+    //     return Excel::download(new CancelledParExport($req),'Cancelled_Par '.$today.'.xlsx' );
+    // }
+
+    // public function exportClosedPar(Request $req){
+    //     $today = new Carbon();
+    //     return Excel::download(new ClosedParExport($req), 'Closed_Par '.$today.'.xlsx');
+    // }
+
+    // public function exportICTItems(){
+    //     $today = new Carbon();
+    //     return Excel::download(new IctItemsExport(), 'ICT Items '.$today.'.xlsx');
+    // }
+
+    // public function itemsWOPar(){
+    //     $today = new Carbon();
+    //     return Excel::download(new ItemsWithOutPar(), 'Items WithOut Par '.$today.'.xlsx');
+    // }
