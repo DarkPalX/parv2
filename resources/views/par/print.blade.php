@@ -68,7 +68,7 @@
 
                     <div class="col-sm-6 tx-right d-none d-md-block">
                         <label class="tx-sans tx-uppercase tx-10 tx-medium tx-spacing-1 tx-color-03">PAR Number</label>
-                        <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{ App\accountabilityHeaders::getNewRefCode($a[0]['header_id']) ?? $a[0]['header_id'] }}</h1>
+                    <h1 class="tx-normal tx-color-04 mg-b-10 tx-spacing--2">#{{ App\accountabilityHeaders::getNewRefCode($a[0]['header_id']) ?? $a[0]['header_id'] }}</h1>
                         <input type="hidden" id="parid" value="{{ $a[0]['refcode'] }}">
                     </div><!-- col -->
                     <div class="col-sm-6 col-lg-8 mg-t-40 mg-sm-t-0 mg-md-t-40">

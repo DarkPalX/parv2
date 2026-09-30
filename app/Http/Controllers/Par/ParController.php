@@ -46,27 +46,32 @@ class ParController extends Controller {
         
         // if (request()->has('header_id') && $request->header_id != NULL) {
         //     // $header_id = (int)request('header_id');
- 
+
         //     $header_id = accountabilityHeaders::where('new_ref_code', $request->header_id)->first()->id;
- 
+
         //     // $header_id = accountabilityHeaders::where('new_ref_code', $request->header_id)->first()?->id ?? (int)$request->header_id;
- 
+
         //     $datas->where(function ($query) use ($header_id) {
         //         $query->where('header_id', $header_id);
+                
         //     });
         // }
- 
+
         if (request()->has('header_id') && $request->header_id != NULL) {
             // $header_id = (int)request('header_id');
+ 
             $header_id = accountabilityHeaders::where('new_ref_code', $request->header_id)->first();
+ 
             if($header_id){
                 $header_id = $header_id->id;
             }
             else{
                 $header_id = (int)request('header_id');
             }
+ 
             $datas->where(function ($query) use ($header_id) {
                 $query->where('header_id', $header_id);
+               
             });
         }
         if (request()->has('accountable')&& $request->accountable !=NULL) {
