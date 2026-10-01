@@ -305,8 +305,15 @@ class ParController extends Controller {
                 'isContractor'    => $request->cont != '' ? '1' : '0' ,
                 'po_no'           => $request->po_no,
                 'cis_si_no'       => $request->cis_si_no, 
-                'serial_no'       => $request->header_serial_no
+                'serial_no'       => $request->header_serial_no,
+                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
             ]);
+            
+            if (now()->lt('2026-10-01')) {
+                $header->update([
+                    'new_ref_code' => $header->id, // or your specific helper logic
+                ]);
+            }
 
             if($query){
 
