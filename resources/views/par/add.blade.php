@@ -42,6 +42,13 @@
                         </div>
                     </div>
 
+                    <div class="form-group row" id="issuance-date-row">
+                        <label for="issuance_date" class="col-sm-2 col-form-label">Issuance Date <i class="tx-danger">*</i></label>
+                        <div class="col-sm-4">
+                            <input required type="text" id="issuance_date" name="issuance_date" value="{{ old('issuance_date', \Carbon\Carbon::today()->format('m/d/Y')) }}" class="form-control">
+                        </div>
+                    </div>
+
                     <div class="form-group row">                            
                         <label class="col-sm-2 col-form-label">Location <i class="tx-danger">*</i></label>
                         <div class="col-sm-4">
@@ -192,6 +199,16 @@
             });
 
             $('#datepicker4').datepicker();
+            $('#issuance_date').datepicker();
+
+            function toggleIssuanceDate() {
+                var isFirstUser = $('#par_type').val() === 'new';
+                $('#issuance-date-row').toggle(isFirstUser);
+                $('#issuance_date').prop('required', isFirstUser);
+            }
+
+            $('#par_type').on('change', toggleIssuanceDate);
+            toggleIssuanceDate();
         });
     </script>
 

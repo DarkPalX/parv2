@@ -25,6 +25,9 @@ QUERY:
 	ALTER TABLE items
 		ADD capex_code VARCHAR(50) NULL;
 
+	ALTER TABLE accountabilityHeaders
+		ADD issuance_date DATETIME NULL;
+
 
 
 

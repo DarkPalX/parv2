@@ -201,6 +201,10 @@ class ParController extends Controller {
 
     public function store(Request $request)
     {   
+        $request->validate([
+            'issuance_date' => 'required_if:par_type,new|date',
+        ]);
+
         $new_ref_code = accountabilityHeaders::generateMonthlyRefCode();
         // dd($new_ref_code);
         if(isset($request->emp)){
@@ -233,6 +237,7 @@ class ParController extends Controller {
                 'is_dept'         => $request->dept != '' ? '1' : '0',
                 'dept'            => $request->emp != '' ? $request->emp_dept : $request->dept,
                 'document_date'   => $request->doc_date,
+                'issuance_date'   => $request->par_type == 'new' ? $request->issuance_date : null,
                 'added_by'        => Auth::user()->domainAccount,
                 'doc_status'      => 'saved',
                 'p_location'      => $request->location,
@@ -345,6 +350,10 @@ class ParController extends Controller {
 
     public function update(Request $request){
         
+        $request->validate([
+            'issuance_date' => 'required_if:par_type,new|date',
+        ]);
+
         $emp   = explode(' - ',$request->emp);
         $data  = $request->all();
         $items = $data['item_id'];
@@ -360,6 +369,7 @@ class ParController extends Controller {
             'is_dept'        => $request->dept != '' ? '1' : '0',
             'dept'           => $emp[0] != '' ? $request->emp_dept : $request->dept,
             'document_date'  => $request->doc_date,
+            'issuance_date'  => $request->par_type == 'new' ? $request->issuance_date : null,
             'added_by'       => Auth::user()->domainAccount,
             'safety'         => $request->safety,
             'p_location'     => $request->location,

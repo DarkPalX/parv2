@@ -25,7 +25,7 @@
                         <div class="divider-text bg-gray-400 text-white">PAR Details</div>
 
                         <div class="form-group row">
-                            <input type="hidden" id="par_type" value="<?php echo e($par->ptype); ?>">
+                            <input type="hidden" id="par_type" name="par_type" value="<?php echo e($par->ptype); ?>">
                             <input type="hidden" name="hid" value="<?php echo e($par->id); ?>">
                             <label class="col-sm-2 col-form-label">Location <i class="tx-danger">*</i></label>
                             <div class="col-sm-4">
@@ -39,6 +39,13 @@
                             <label for="inputEmail3" class="col-sm-3 col-form-label d-flex justify-content-end">Doc Date <i class="tx-danger">*</i></label>
                             <div class="col-sm-3">
                                 <input required type="text" id="datepicker4" name="doc_date" value="<?php echo e(date('m/d/Y', strtotime($par->document_date))); ?>" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="issuance-date-row">
+                            <label for="issuance_date" class="col-sm-2 col-form-label">Issuance Date <i class="tx-danger">*</i></label>
+                            <div class="col-sm-4">
+                                <input type="text" id="issuance_date" name="issuance_date" value="<?php echo e($par->issuance_date ? date('m/d/Y', strtotime($par->issuance_date)) : date('m/d/Y', strtotime($par->document_date))); ?>" class="form-control">
                             </div>
                         </div>
 
@@ -227,6 +234,11 @@
         $(function(){
             'use strict'
             $('#datepicker4').datepicker();
+            $('#issuance_date').datepicker();
+
+            var isFirstUser = $('#par_type').val() === 'new';
+            $('#issuance-date-row').toggle(isFirstUser);
+            $('#issuance_date').prop('required', isFirstUser);
         });
     </script>
     <script>

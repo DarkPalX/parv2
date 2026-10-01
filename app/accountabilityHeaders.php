@@ -14,7 +14,7 @@ class accountabilityHeaders extends Model
     protected $fillable = [
         'employee_id', 'dept_id','is_dept','bis_header_id','ref_par','document_date', 'added_by', 'po', 'doc_status',
         'safety', 'posted_by', 'posted_date', 'unpost_request', 'emp_name', 'p_location', 'p_site', 'doc_ref',
-        'rq_no', 'ptype', 'dept', 'isContractor','notes', 'po_no', 'cis_si_no', 'serial_no','reason', 'date_transfer', 'new_ref_code'
+        'rq_no', 'ptype', 'dept', 'isContractor','notes', 'po_no', 'cis_si_no', 'serial_no','reason', 'date_transfer', 'new_ref_code', 'issuance_date'
     ];
     
 	public $table='accountabilityHeaders';
