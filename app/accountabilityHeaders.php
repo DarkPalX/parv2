@@ -26,22 +26,42 @@ class accountabilityHeaders extends Model
 
    	}
 
-   	public static function generateMonthlyRefCode($documentDate = null)
+    public static function generateMonthlyRefCode($documentDate = null)
     {
         $date = $documentDate ? Carbon::parse($documentDate) : Carbon::now();
-        $year = $date->format('Y');
+        
+        $yearFull = $date->format('Y'); // 4-digit for database querying (e.g., '2026')
+        $yearShort = $date->format('y'); // 2-digit for the final code format (e.g., '26')
         $month = $date->format('m');
 
-        // Count existing records created in the same year and month
-        $currentMonthCount = static::whereYear('created_at', $year)
+        // Count existing records using the 4-digit year and month
+        $currentMonthCount = static::whereYear('created_at', $yearFull)
             ->whereMonth('created_at', $month)
             ->count();
 
-        // Increment count for the new record and pad with zeros (4 digits)
-        $sequence = str_pad($currentMonthCount + 1, 4, '0', STR_PAD_LEFT);
+        // Increment count and pad with zeros (3 digits)
+        $sequence = str_pad($currentMonthCount + 1, 3, '0', STR_PAD_LEFT);
 
-        return "{$year}-{$month}-{$sequence}";
+        // Return using the 2-digit year (e.g., 2610001)
+        return "{$yearShort}{$month}{$sequence}";
     }
+
+   	// public static function generateMonthlyRefCode($documentDate = null)
+    // {
+    //     $date = $documentDate ? Carbon::parse($documentDate) : Carbon::now();
+    //     $year = $date->format('Y');
+    //     $month = $date->format('m');
+
+    //     // Count existing records created in the same year and month
+    //     $currentMonthCount = static::whereYear('created_at', $year)
+    //         ->whereMonth('created_at', $month)
+    //         ->count();
+
+    //     // Increment count for the new record and pad with zeros (4 digits)
+    //     $sequence = str_pad($currentMonthCount + 1, 4, '0', STR_PAD_LEFT);
+
+    //     return "{$year}-{$month}-{$sequence}";
+    // }
 
    	public static function getNewRefCode($id){
    		$ref = accountabilityHeaders::find($id);

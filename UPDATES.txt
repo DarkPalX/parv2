@@ -1,7 +1,7 @@
 ######################### SEPTEMBER 30, 2026 #########################
 
 DONE • Field to input CAPEX Code if item is CAPEX Item
-• Field to input issuance date if accountable person is first user of the item
+DONE • Field to input issuance date if accountable person is first user of the item
 • Auto computation of Book Value and running balance of issued/transferred PAR Item (BV = Purchase Value divided by 5 years depreciation period)
 • Field to input Transfer Value (manual input or auto generate TV).
 • PAR shows aging of each item
