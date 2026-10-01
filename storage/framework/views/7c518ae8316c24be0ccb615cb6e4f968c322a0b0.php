@@ -112,11 +112,15 @@
                         <?php endif; ?>
                         <div class="col-md-4">
                             <label for="expense_type">Expense Type <i class="tx-danger">*</i></label>
-                            <select required class="custom-select" name="expense_type">
-                                <option value="" selected>Choose One</option>
-                                <option value="CAPEX">CAPEX</option>
-                                <option value="OPEX">OPEX</option>
+                            <select required class="custom-select expense-type" name="expense_type" id="expense_type">
+                                <option value="">Choose One</option>
+                                <option <?php if(old('expense_type') == 'CAPEX'): ?> selected <?php endif; ?> value="CAPEX">CAPEX</option>
+                                <option <?php if(old('expense_type') == 'OPEX'): ?> selected <?php endif; ?> value="OPEX">OPEX</option>
                             </select>
+                        </div>
+                        <div class="col-md-4 capex-code-field" style="display: none;">
+                            <label for="capex_code">CAPEX Code <i class="tx-danger">*</i></label>
+                            <input type="text" name="capex_code" id="capex_code" class="form-control" maxlength="50" value="<?php echo e(old('capex_code')); ?>">
                         </div>
                     </div>
 
@@ -207,6 +211,18 @@
 <script>
     $(function(){
         'use strict'
+
+        function toggleCapexCode() {
+            var isCapex = $('#expense_type').val() === 'CAPEX';
+            $('.capex-code-field').toggle(isCapex);
+            $('#capex_code').prop('required', isCapex);
+            if (!isCapex) {
+                $('#capex_code').val('');
+            }
+        }
+
+        $('#expense_type').on('change', toggleCapexCode);
+        toggleCapexCode();
 
         // Disable search
         $('.select2-no-search').select2({

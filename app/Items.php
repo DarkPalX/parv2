@@ -16,7 +16,7 @@ class Items extends Model
 
     protected $fillable = [
         'stock_type', 'inv_code','stock_code','description','oem_id','uom', 'item_kind', 'expense_type', 'serial_no',
-        'other_specs', 'cost', 'asset_code', 'po_no', 'dr_no', 'invoice_no', 'added_by', 'qty', 'is_verified'
+        'other_specs', 'cost', 'asset_code', 'po_no', 'dr_no', 'invoice_no', 'added_by', 'qty', 'is_verified', 'capex_code'
     ];
 
     public $timestamps = true;

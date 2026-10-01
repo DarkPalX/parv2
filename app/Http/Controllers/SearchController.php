@@ -378,27 +378,16 @@ class SearchController extends Controller
     public function filter_saved_nonstock_items(Request $req){
         
         if($req->ajax()){
-
-            if($req->assetc != ''){
-                $items = Items::where('item_kind','=',2)
-                    ->where('id','LIKE',"$req->itemid%")
-                    ->where('description','LIKE',"$req->dscptn%")
-                    ->where('expense_type','LIKE',"$req->exptyp%")
-                    ->where('serial_no','LIKE',"$req->serial%")
-                    ->where('asset_code','LIKE',"$req->assetc%")
-                    ->where('po_no','LIKE',"$req->po_num%")
-                    ->where('dr_no','LIKE',"$req->dr_num%")
-                    ->get();
-            } else {
-                $items = Items::where('item_kind','=',2)
-                    ->where('id','LIKE',"$req->itemid%")
-                    ->where('description','LIKE',"$req->dscptn%")
-                    ->where('expense_type','LIKE',"$req->exptyp%")
-                    ->where('serial_no','LIKE',"$req->serial%")
-                    ->where('po_no','LIKE',"$req->po_num%")
-                    ->where('dr_no','LIKE',"$req->dr_num%")
-                    ->get();
-            }
+            $items = Items::where('item_kind','=',2)
+                ->where('id','LIKE',"$req->itemid%")
+                ->where('description','LIKE',"$req->dscptn%")
+                ->where('expense_type','LIKE',"$req->exptyp%")
+                ->where('capex_code','LIKE',"$req->capex_code%")
+                ->where('serial_no','LIKE',"$req->serial%")
+                ->where('asset_code','LIKE',"$req->assetc%")
+                ->where('po_no','LIKE',"$req->po_num%")
+                ->where('dr_no','LIKE',"$req->dr_num%")
+                ->get();
             return view('search.filter_saved_nonstock_items',compact('items'));
         }  
     }

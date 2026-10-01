@@ -30,6 +30,7 @@
                                         <th><input type="text" name="itemid" class="form-control"></th>
                                         <th><input type="text" name="dscptn" class="form-control"></th>
                                         <th><input type="text" name="exptyp" class="form-control"></th>
+                                        <th><input type="text" name="capex_code" class="form-control"></th>
                                         <th><input type="text" name="serial" class="form-control"></th>
                                         <th></th>
                                         <th><input type="text" name="assetc"   class="form-control"></th>
@@ -43,6 +44,7 @@
                                         <th class="wd-10p">ID</th>
                                         <th class="wd-30p">Description</th>
                                         <th class="wd-10p">Expense Type</th>
+                                        <th class="wd-10p">CAPEX Code</th>
                                         <th class="wd-10p">Serial #</th>
                                         <th class="wd-5p">Cost</th>
                                         <th class="wd-10p">Asset Code</th>
@@ -57,6 +59,7 @@
                                             <th scope="row" class="wd-5p"><a href="/item/details/{{ $item->id }}" target="_blank">{{ $item->id }}</a></th>
                                             <td class="wd-390">{{ strtoupper($item->description) }}</td>
                                             <td>{{ $item->expense_type }}</td>
+                                            <td>{{ $item->expense_type === 'CAPEX' ? ($item->capex_code ?: '-') : '-' }}</td>
                                             <td>{{ $item->serial_no }}</td>
                                             <td>{{ number_format($item->cost,2) }}</td>
                                             <td>{{ $item->asset_code }}</td>
@@ -75,7 +78,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="11"><center>No items found</center></td>
+                                            <td colspan="10"><center>No items found</center></td>
                                         </tr>
                                     @endforelse
                                 </tbody>

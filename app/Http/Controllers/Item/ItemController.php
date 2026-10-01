@@ -64,6 +64,13 @@ class ItemController extends Controller
 
     public function store(Request $req)
     {   
+        $req->validate([
+            'expense_type' => 'required|in:CAPEX,OPEX',
+            'capex_code' => 'required_if:expense_type,CAPEX|max:50',
+        ]);
+
+        // CAPEX codes must never be carried by OPEX items.
+        $capexCode = $req->expense_type === 'CAPEX' ? $req->capex_code : null;
 
         if($req->qty == 0){
 
@@ -80,6 +87,7 @@ class ItemController extends Controller
                 $serial->uom = $req->item_kind == 1 || 3 ? $req->uom_input : $req->uom_option;
                 $serial->item_kind = 1;
                 $serial->expense_type = $req->expense_type;
+                $serial->capex_code = $capexCode;
                 $serial->other_specs = $req->other_specs;
                 $serial->cost = $req->cost;
                 $serial->po_no = $req->po;
@@ -106,6 +114,7 @@ class ItemController extends Controller
                 $serial->uom = $req->item_kind == 1  ? $req->uom_input : $req->uom_option;
                 $serial->item_kind = $req->item_kind;
                 $serial->expense_type = $req->expense_type;
+                $serial->capex_code = $capexCode;
                 $serial->other_specs = $req->other_specs;
                 $serial->cost = $req->cost;
                 $serial->po_no = $req->po;
@@ -180,6 +189,11 @@ class ItemController extends Controller
 
     public function update(Request $req)
     {
+        $req->validate([
+            'expense_type' => 'required|in:CAPEX,OPEX',
+            'capex_code' => 'required_if:expense_type,CAPEX|max:50',
+        ]);
+
         Items::where('id',$req->iid)->update([
             'stock_type'  => $req->stock_type,
             'inv_code'    => $req->inv_code,
@@ -187,6 +201,7 @@ class ItemController extends Controller
             'oem_id'      => $req->oem_id,
             'uom'         => $req->uom,
             'expense_type'=> $req->expense_type,
+            'capex_code'  => $req->expense_type === 'CAPEX' ? $req->capex_code : null,
             'serial_no'   => $req->serial,
             'other_specs' => $req->other_specs,
             'cost'        => $req->cost,

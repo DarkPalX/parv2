@@ -1,6 +1,6 @@
 ######################### SEPTEMBER 30, 2026 #########################
 
-• Field to input CAPEX Code if item is CAPEX Item
+DONE • Field to input CAPEX Code if item is CAPEX Item
 • Field to input issuance date if accountable person is first user of the item
 • Auto computation of Book Value and running balance of issued/transferred PAR Item (BV = Purchase Value divided by 5 years depreciation period)
 • Field to input Transfer Value (manual input or auto generate TV).
@@ -20,7 +20,10 @@ Snippet from Acctg-MO-26-09-009:
 
 
 
+QUERY:
 
+	ALTER TABLE items
+		ADD capex_code VARCHAR(50) NULL;
 
 
 

@@ -4,6 +4,7 @@
         <th scope="row" class="wd-5p"><a href="/item/details/{{ $item->id }}" target="_blank">{{ $item->id }}</a></th>
         <td class="wd-390">{{ strtoupper($item->description) }}</td>
         <td>{{ $item->expense_type }}</td>
+        <td>{{ $item->expense_type === 'CAPEX' ? ($item->capex_code ?: '-') : '-' }}</td>
         <td>{{ $item->serial_no }}</td>
         <td>{{ $item->cost }}</td>
         <td>{{ $item->asset_code }}</td>
@@ -22,6 +23,6 @@
     </tr>
 @empty
     <tr>
-        <td colspan="11"><center>Item not found</center></td>
+        <td colspan="10"><center>Item not found</center></td>
     </tr>
 @endforelse
