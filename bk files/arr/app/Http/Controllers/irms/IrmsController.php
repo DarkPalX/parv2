@@ -8,7 +8,7 @@ use App\Http\Requests;
 use Auth;
 use DB;
 
-use App\AccountabilityHeaders;
+use App\accountabilityHeaders;
 use App\accountabilityDetails;
 use App\Employees;
 use App\Items;
@@ -27,6 +27,7 @@ class IrmsController extends Controller
         $items = $data['item_id'];
         $ppeNo = $data['request_no'];
         $qty   = $data['qty'];
+        $new_ref_code = accountabilityHeaders::generateMonthlyRefCode();
 
         $header = accountabilityHeaders::create([
             'ptype'          => 'new',
@@ -42,6 +43,7 @@ class IrmsController extends Controller
             'p_location'     => $request->p_location,
             'p_site'         => $request->p_site,
             'doc_ref'        => $request->doc_ref,
+            'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code,
         ]);
 
         if($header){

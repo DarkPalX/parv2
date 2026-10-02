@@ -25,11 +25,11 @@
     // $conn_a['agusan']['pword'] = '@Temp123!';
 
     // LOCAL RAEVIN
-    $conn_a['agusan']['type'] = 'sqlsrv';
-    $conn_a['agusan']['host'] = '.\RAEVIN';
-    $conn_a['agusan']['name'] = 'SyncHRIS';
-    $conn_a['agusan']['uname'] = 'sa';
-    $conn_a['agusan']['pword'] = 'P@ssw0rd';	
+    // $conn_a['agusan']['type'] = 'sqlsrv';
+    // $conn_a['agusan']['host'] = '.\RAEVIN';
+    // $conn_a['agusan']['name'] = 'SyncHRIS';
+    // $conn_a['agusan']['uname'] = 'sa';
+    // $conn_a['agusan']['pword'] = 'P@ssw0rd';	
 
 
 

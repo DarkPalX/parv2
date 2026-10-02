@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Session;
 use Auth;
 use DB;
+use Carbon\Carbon;
 
 
 
@@ -69,6 +70,36 @@ class parDetails extends Model
 			}
 			
 		});
+	}
+
+	/**
+	 * Return the policy values for an item using straight-line depreciation
+	 * over five years (60 completed calendar months).
+	 */
+	public static function financialValues($cost, $qty = 1, $purchaseDate = null)
+	{
+		$unitCost = max(0, (float) $cost);
+		$quantity = max(0, (float) $qty);
+		$months = 0;
+
+		if ($purchaseDate) {
+			try {
+				$months = min(60, max(0, Carbon::parse($purchaseDate)->diffInMonths(Carbon::today())));
+			} catch (\Exception $e) {
+				$months = 0;
+			}
+		}
+
+		$unitBookValue = max(0, $unitCost - (($unitCost / 60) * $months));
+		$halfPurchaseCost = ($unitCost * 0.50) * $quantity;
+		$bookValue = $unitBookValue * $quantity;
+
+		return [
+			'purchase_cost_50' => $halfPurchaseCost,
+			'book_value' => $bookValue,
+			'chargeable_cost' => max($halfPurchaseCost, $bookValue),
+			'elapsed_months' => $months,
+		];
 	}
  	
 }

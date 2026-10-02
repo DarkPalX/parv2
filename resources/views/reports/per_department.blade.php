@@ -110,12 +110,18 @@
                         <th>Item Status</th>
                         <th>Qty</th>
                         <th>Cost</th>
+                        <th>50% Purchase Cost</th>
+                        <th>Book Value</th>
+                        <th>Chargeable Cost</th>
                         <th>Added by</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if(isset($qry))
                     @forelse($qry as $d)
+                        @php
+                            $financialValues = \App\parDetails::financialValues($d->cost, $d->qty, $d->created_at ?? $d->document_date);
+                        @endphp
                         <tr class="tx-13">
                             {{-- <td>{{$d->dept}}</td> --}}
                             <td>@if(isset($_GET['dept'])) {{ $_GET['dept'] }} @endif</td>
@@ -130,6 +136,9 @@
                             <td>{{strtoupper($d->status)}}</td>
                             <td class="text-right">{{$d->qty}}</td>
                             <td class="text-right">{{$d->cost}}</td>
+                            <td class="text-right">{{number_format($financialValues['purchase_cost_50'], 2)}}</td>
+                            <td class="text-right">{{number_format($financialValues['book_value'], 2)}}</td>
+                            <td class="text-right">{{number_format($financialValues['chargeable_cost'], 2)}}</td>
                             <td>{{$d->added_by}}</td>
                         </tr>
                     @empty

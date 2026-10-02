@@ -432,6 +432,8 @@ class ParController extends Controller {
         $costs = $data['cost'];
         $qty = $data['qty'];
         $today = Carbon::today();
+        
+        $new_ref_code = accountabilityHeaders::generateMonthlyRefCode();
 
         $header = accountabilityHeaders::create([
             'ptype'           => 'adjustment',
@@ -447,7 +449,8 @@ class ParController extends Controller {
             'safety'          => $request->safety,
             'p_location'      => $request->location,
             'p_site'          => $request->site,
-            'doc_ref'         => $request->doc_ref
+            'doc_ref'         => $request->doc_ref,
+            'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
         ]);
 
         if($header){
@@ -662,62 +665,64 @@ class ParController extends Controller {
 //
 
 // Transfer Accountability
-public function auto_transfer_item(Request $req){
+    public function auto_transfer_item(Request $req){
 
-    $emp  = explode(' - ', $req->emp);
+        $emp  = explode(' - ', $req->emp);
 
-    $lock = accountabilityDetails::where('item', $req->iid)->where('header_id', $req->hid)->first();
-    
-    if ($lock) {
-        $finalQty = $lock->qty - $req->qty;
-
-        $lock->update([
-            'is_lock' => 1,
-            'status' => $finalQty <= 0 ? 'closed' : 'OPEN',
-            'closed_date' => Carbon::today(),
-            'closed_by' => 'manual transfer',
-            'qty' => $finalQty
-        ]);
-    }
-    
-    logger(json_encode($req->all()));
-
-    if ($lock) {
-        $source_header = accountabilityHeaders::find($req->hid);
-        $item_data = accountabilityHeaders::create([
-            'ptype' => 'transfer',
-            'ref_par' => $req->hid,
-            'employee_id' => $req->dept != '' ? 0 : ($emp[0] ?? null),
-            'emp_name' => $req->dept != '' ? '' : ($emp[1] ?? null),
-            'dept_id' => $emp[0] != '' ? 0 : $req->dept,
-            'is_dept' => $req->dept != '' ? '1' : '0',
-            'dept' => $req->emp_dept,
-            'document_date' => Carbon::today(),
-            'date_transfer' => date('Y-m-d H:i:s'),
-            'added_by' => Auth::user()->domainAccount,
-            'doc_status' => 'OPEN',
-            'reason' => $req->reason,
-            'p_location' => $source_header->p_location,
-            'p_site' => $source_header->p_site,
-            'doc_ref' => $source_header->doc_ref,
-            
-        ]);
-
+        $lock = accountabilityDetails::where('item', $req->iid)->where('header_id', $req->hid)->first();
         
+        if ($lock) {
+            $finalQty = $lock->qty - $req->qty;
 
-        $transfered = $this->transfer_item($req, $item_data, $req->iid); 
-        
-    }
-
-    return back()->with('success', 'Accountability transferred successfully');
+            $lock->update([
+                'is_lock' => 1,
+                'status' => $finalQty <= 0 ? 'closed' : 'OPEN',
+                'closed_date' => Carbon::today(),
+                'closed_by' => 'manual transfer',
+                'qty' => $finalQty
+            ]);
         }
+        
+        logger(json_encode($req->all()));
+
+        if ($lock) {
+            $new_ref_code = accountabilityHeaders::generateMonthlyRefCode();
+            $source_header = accountabilityHeaders::find($req->hid);
+            $item_data = accountabilityHeaders::create([
+                'ptype' => 'transfer',
+                'ref_par' => $req->hid,
+                'employee_id' => $req->dept != '' ? 0 : ($emp[0] ?? null),
+                'emp_name' => $req->dept != '' ? '' : ($emp[1] ?? null),
+                'dept_id' => $emp[0] != '' ? 0 : $req->dept,
+                'is_dept' => $req->dept != '' ? '1' : '0',
+                'dept' => $req->emp_dept,
+                'document_date' => Carbon::today(),
+                'date_transfer' => date('Y-m-d H:i:s'),
+                'added_by' => Auth::user()->domainAccount,
+                'doc_status' => 'OPEN',
+                'reason' => $req->reason,
+                'p_location' => $source_header->p_location,
+                'p_site' => $source_header->p_site,
+                'doc_ref' => $source_header->doc_ref,
+                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
+            ]);
+
+        
+
+            $transfered = $this->transfer_item($req, $item_data, $req->iid); 
+        
+        }
+
+        return back()->with('success', 'Accountability transferred successfully');
+    }
 
 
     // multiple transfer item
     public function multiple_transfer(Request $req){
-    //    dd($req->all());
+        //    dd($req->all());
         $emp  = explode(' - ',$req->emp);
         
+            $new_ref_code = accountabilityHeaders::generateMonthlyRefCode();
             $source_header = accountabilityHeaders::find($req->hid);
             $item_data = accountabilityHeaders::create([
                 'ptype'           => 'transfer',
@@ -734,8 +739,8 @@ public function auto_transfer_item(Request $req){
                 'reason'          => $req->reason,   
                 'p_location'      => $source_header->p_location,
                 'p_site'          => $source_header->p_site,
-                'doc_ref'         => $source_header->doc_ref
-               
+                'doc_ref'         => $source_header->doc_ref,
+                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
         ]);
         
         foreach($req->item_ids as $key => $ids){
@@ -763,7 +768,7 @@ public function auto_transfer_item(Request $req){
     
     }
 
-     public function transfer_item($r,$i,$iid){
+    public function transfer_item($r,$i,$iid){
        
         $header = accountabilityDetails::create([
             'header_id'     => $i->id,

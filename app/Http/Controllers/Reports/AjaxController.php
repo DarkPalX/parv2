@@ -126,14 +126,27 @@ class AjaxController extends Controller
                                         <th style='width:5%;'> Qty </th>
                                         <th style='width:7%;'> Cost </th>
                                         <th style='width:7%;'> Total Cost </th>
+                                        <th style='width:9%;'> 50% Purchase Cost </th>
+                                        <th style='width:9%;'> Book Value </th>
+                                        <th style='width:9%;'> Chargeable Cost </th>
                                         <th style='width:9%;'> Encoder </th>
                                     </thead>";
             
             if($rows > 0){
                 $total_cost = 0;
+                $total_purchase_cost_50 = 0;
+                $total_book_value = 0;
+                $total_chargeable_cost = 0;
                 foreach($data as $key => $d){
+                    $financialValues = parDetails::financialValues($d->cost, $d->qty, $d->created_at ?? $d->document_date);
                     if($d->qty > 0){
                         $total_cost += $d->qty*$d->cost;
+                    }
+
+                    if($d->status == 'OPEN'){
+                        $total_purchase_cost_50 += $financialValues['purchase_cost_50'];
+                        $total_book_value += $financialValues['book_value'];
+                        $total_chargeable_cost += $financialValues['chargeable_cost'];
                     }
 
                     $output .= '<tbody>'.
@@ -149,13 +162,25 @@ class AjaxController extends Controller
                                         '<td class="text-right">'.$d->qty.'</td>'.
                                         '<td class="text-right">'.$d->cost.'</td>'.
                                         '<td class="text-right">'.number_format(($d->cost * $d->qty),2).'</td>'.
+                                        '<td class="text-right">'.number_format($financialValues['purchase_cost_50'],2).'</td>'.
+                                        '<td class="text-right">'.number_format($financialValues['book_value'],2).'</td>'.
+                                        '<td class="text-right">'.number_format($financialValues['chargeable_cost'],2).'</td>'.
                                         '<td>'.$d->added_by.'</td>'.
                                     '</tr>';
                 }
 
                         $output .= '<tr>'.
                                         '<td colspan="10"><b>Grand Total</b></td>'.
-                                        '<td colspan="2"><b>'.number_format($total_cost,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_cost,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_purchase_cost_50,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_book_value,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_chargeable_cost,2).'</b></td>'.
+                                        '<td></td>'.
+                                    '</tr>'.
+                                    '<tr>'.
+                                        '<td colspan="12"><b>Total Remaining Book Value (OPEN PAR items)</b></td>'.
+                                        '<td colspan="2"><b>'.number_format($total_book_value,2).'</b></td>'.
+                                        '<td></td>'.
                                     '</tr>'.
                                 '</tbody>'.
                             '</table>'.
@@ -227,15 +252,28 @@ class AjaxController extends Controller
                                             <th class='wd-5p'> Qty </th>
                                             <th class='wd-5p'> Cost </th>
                                             <th class='wd-5p'> Total Cost </th>
+                                            <th class='wd-8p'> 50% Purchase Cost </th>
+                                            <th class='wd-8p'> Book Value </th>
+                                            <th class='wd-8p'> Chargeable Cost </th>
                                             <th class='wd-5p'> Encoder </th>
                                         </tr>
                                     </thead>";
 
             if($rows > 0){
                 $total_cost = 0;
+                $total_purchase_cost_50 = 0;
+                $total_book_value = 0;
+                $total_chargeable_cost = 0;
                 foreach($data as $key => $d){
+                    $financialValues = parDetails::financialValues($d->cost, $d->qty, $d->created_at ?? $d->document_date);
                     if($d->qty > 0){
                         $total_cost += $d->qty*$d->cost;
+                    }
+
+                    if($d->status == 'OPEN'){
+                        $total_purchase_cost_50 += $financialValues['purchase_cost_50'];
+                        $total_book_value += $financialValues['book_value'];
+                        $total_chargeable_cost += $financialValues['chargeable_cost'];
                     }
 
                     $output .= '<tbody>'.
@@ -253,13 +291,25 @@ class AjaxController extends Controller
                                         '<td class="text-right">'.$d->qty.'</td>'.
                                         '<td class="text-right">'.$d->cost.'</td>'.
                                         '<td class="text-right">'.number_format(($d->cost * $d->qty),2).'</td>'.
+                                        '<td class="text-right">'.number_format($financialValues['purchase_cost_50'],2).'</td>'.
+                                        '<td class="text-right">'.number_format($financialValues['book_value'],2).'</td>'.
+                                        '<td class="text-right">'.number_format($financialValues['chargeable_cost'],2).'</td>'.
                                         '<td>'.$d->added_by.'</td>'.
                                     '</tr>';
                 }
 
                         $output .= '<tr>'.
                                         '<td colspan="12"><b>Grand Total</b></td>'.
-                                        '<td colspan="2"><b>'.number_format($total_cost,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_cost,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_purchase_cost_50,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_book_value,2).'</b></td>'.
+                                        '<td><b>'.number_format($total_chargeable_cost,2).'</b></td>'.
+                                        '<td></td>'.
+                                    '</tr>'.
+                                    '<tr>'.
+                                        '<td colspan="14"><b>Total Remaining Book Value (OPEN PAR items)</b></td>'.
+                                        '<td colspan="2"><b>'.number_format($total_book_value,2).'</b></td>'.
+                                        '<td></td>'.
                                     '</tr>'.
                                 '</tbody>'.
                             '</table>'.
