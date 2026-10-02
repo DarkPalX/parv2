@@ -6,6 +6,41 @@
         .content {
             overflow: hidden;
         }
+
+        .content-body > .container {
+            max-width: none;
+            width: 100%;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        .report-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .report-table {
+            width: 100%;
+            min-width: 1650px;
+            table-layout: auto;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 8px 6px;
+            font-size: 11px;
+            line-height: 1.25;
+            vertical-align: top;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .report-table .report-number,
+        .report-table .report-aging {
+            white-space: nowrap;
+            text-align: right;
+        }
         @media print{
             .filter { display: none; }
             .b-head { display: none; }
@@ -95,13 +130,15 @@
             </div>          
         </div>
         <div class="col-12">
-            <table class="table">
+            <div class="report-table-wrap">
+            <table class="table table-hover report-table">
                 <thead>
                     <tr>
                         <th>Dept</th>
                         <th>Accountable</th>
                         <th>Refcode</th>
                         <th>Date</th>
+                        <th>Aging</th>
                         <th>Serial#</th>
                         <th>Ref Doc</th>
                         <th>Stock Code</th>
@@ -128,17 +165,18 @@
                             <td>{{$d->accountable}}</td>
                             <td>{{$d->refcode}}</td>                    
                             <td>{{$d->document_date}}</td>
+                            <td class="report-aging">{{$financialValues['elapsed_months']}} mos</td>
                             <td>{{$d->detail_serial_no}}</td>
                             <td>{{$d->doc_ref}}</td>
                             <td>{{$d->stock_code}}</td>
                             <td>{{$d->description}}</td>                    
                             <td>{{strtoupper($d->doc_status)}}</td>
                             <td>{{strtoupper($d->status)}}</td>
-                            <td class="text-right">{{$d->qty}}</td>
-                            <td class="text-right">{{$d->cost}}</td>
-                            <td class="text-right">{{number_format($financialValues['purchase_cost_50'], 2)}}</td>
-                            <td class="text-right">{{number_format($financialValues['book_value'], 2)}}</td>
-                            <td class="text-right">{{number_format($financialValues['chargeable_cost'], 2)}}</td>
+                            <td class="report-number">{{$d->qty}}</td>
+                            <td class="report-number">{{$d->cost}}</td>
+                            <td class="report-number">{{number_format($financialValues['purchase_cost_50'], 2)}}</td>
+                            <td class="report-number">{{number_format($financialValues['book_value'], 2)}}</td>
+                            <td class="report-number">{{number_format($financialValues['chargeable_cost'], 2)}}</td>
                             <td>{{$d->added_by}}</td>
                         </tr>
                     @empty
@@ -146,6 +184,7 @@
                     @endif
                 </tbody>
             </table>
+            </div>
             @if(isset($qry)) {{ $qry->appends(request()->query())->links() }} @endif
         </div>
 

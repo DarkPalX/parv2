@@ -24,15 +24,20 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
     public function collection()
     {
         if ($this->r->dept == 'ALL') {
-            return parDetails::select(
+            $collection = parDetails::select(
                 'dept', 'accountable', 'header_id', 'document_date', 'serial_no', 
                 'doc_ref', 'stock_code', 'description', 'doc_status', 'status', 
-                'qty', 't_cost', 'added_by'
+                'qty', 't_cost', 'created_at', 'added_by'
             )
             ->where('status', 'OPEN')
             ->orderBy('dept')
             ->orderBy('accountable')
             ->get();
+
+            return $collection->map(function ($row) {
+                $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
+                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+            });
         } 
         else {
             $url = env('APP_URL') . "/parv2_latest/api/hris-get-employees-api.php?dept=" . urlencode($this->r->dept);
@@ -55,6 +60,7 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
                 'status',
                 'qty',
                 't_cost',
+                'created_at',
                 'added_by'
             )
             ->whereIn('employee_id', $employeeIds)
@@ -68,7 +74,10 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
                 $row->dept = $this->r->dept;
             }
  
-            return $collection;
+            return $collection->map(function ($row) {
+                $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
+                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+            });
 
             
             // return parDetails::select(
@@ -105,6 +114,7 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
             'Accountable',
             'Par #',            
             'Document Date',
+            'Aging',
             'Serial #',
             'Batch/QR #',
             'Stock Code',
@@ -113,6 +123,9 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
             'Item Status',
             'Qty',
             'Cost',
+            '50% Purchase Cost',
+            'Book Value',
+            'Chargeable Cost',
             'Added By'
         ];
     }

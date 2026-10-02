@@ -24,7 +24,12 @@ class ExportDepartmentPar implements FromCollection, WithHeadings
     public function collection()
     {
         // $dept = str_replace(':', '/', $this->r->accountable);
-        return parDetails::select('header_id','dept_id','document_date','serial_no','doc_ref','stock_code','description','dept','doc_status','status','qty','t_cost','added_by')->where('is_dept',1)->whereBetween('document_date',[$this->r->from,$this->r->to])->orderBy('header_id','desc')->get();
+        $collection = parDetails::select('header_id','dept_id','document_date','serial_no','doc_ref','stock_code','description','dept','doc_status','status','qty','t_cost','created_at','added_by')->where('is_dept',1)->whereBetween('document_date',[$this->r->from,$this->r->to])->orderBy('header_id','desc')->get();
+
+        return $collection->map(function ($row) {
+            $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
+            return [$row->header_id, $row->dept_id, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->dept, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+        });
 
     }
 
@@ -34,6 +39,7 @@ class ExportDepartmentPar implements FromCollection, WithHeadings
             'Par #',
             'Accountable',
             'Document Date',
+            'Aging',
             'Serial #',
             'Batch/QR #',
             'Stock Code',
@@ -43,6 +49,9 @@ class ExportDepartmentPar implements FromCollection, WithHeadings
             'Item Status',
             'Qty',
             'Cost',
+            '50% Purchase Cost',
+            'Book Value',
+            'Chargeable Cost',
             'Added By'
         ];
     }

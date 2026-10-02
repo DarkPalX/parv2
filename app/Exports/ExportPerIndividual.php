@@ -25,18 +25,23 @@ class ExportPerIndividual implements FromCollection, WithHeadings
     {
 
         if($this->r->dept == 'ALL'){
-            return parDetails::select('dept','accountable','header_id','document_date','serial_no','doc_ref','stock_code','description','doc_status','status','qty','t_cost','added_by')->where('status','OPEN')->orderBy('dept')->orderBy('accountable')->get();
+            $collection = parDetails::select('dept','accountable','header_id','document_date','serial_no','doc_ref','stock_code','description','doc_status','status','qty','t_cost','created_at','added_by')->where('status','OPEN')->orderBy('dept')->orderBy('accountable')->get();
             
         }
         else{
             //$dept = str_replace(':', '/', $this->r->dept);        
-            return parDetails::select('dept','accountable','header_id','document_date','serial_no','doc_ref','stock_code','description','doc_status','status','qty','t_cost','added_by')
+            $collection = parDetails::select('dept','accountable','header_id','document_date','serial_no','doc_ref','stock_code','description','doc_status','status','qty','t_cost','created_at','added_by')
                 ->where('dept',$this->r->dept)
                 ->where('status','OPEN')
                 ->orderBy('dept')
                 ->orderBy('accountable')
                 ->get();
         }
+
+        return $collection->map(function ($row) {
+            $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
+            return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+        });
 
     }
 
@@ -47,6 +52,7 @@ class ExportPerIndividual implements FromCollection, WithHeadings
             'Accountable',
             'Par #',            
             'Document Date',
+            'Aging',
             'Serial #',
             'Batch/QR #',
             'Stock Code',
@@ -55,6 +61,9 @@ class ExportPerIndividual implements FromCollection, WithHeadings
             'Item Status',
             'Qty',
             'Cost',
+            '50% Purchase Cost',
+            'Book Value',
+            'Chargeable Cost',
             'Added By'
         ];
     }
