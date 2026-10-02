@@ -5,9 +5,9 @@ DONE • Field to input issuance date if accountable person is first user of the
 DONE • Auto computation of Book Value and running balance of issued/transferred PAR Item (BV = Purchase Value divided by 5 years depreciation period)
 DONE • Field to input Transfer Value (manual input or auto generate TV).
 DONE • PAR shows aging of each item
-• PAR Summary per person or Dept should shows all these additional data.
-• PAR Report shows total remaining book value of all open PAR items
-• New column for 50% of Purchase Cost, Book Value and Chargeable Cost in PAR Summary – for easy viewing and reference
+DONE • PAR Summary per person or Dept should shows all these additional data.
+DONE • PAR Report shows total remaining book value of all open PAR items
+DONE • New column for 50% of Purchase Cost, Book Value and Chargeable Cost in PAR Summary – for easy viewing and reference
 
 FOR REFERENCE
 Snippet from Acctg-MO-26-09-009:
