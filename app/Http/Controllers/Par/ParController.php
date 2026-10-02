@@ -221,6 +221,7 @@ class ParController extends Controller {
         $costs = $data['cost'];
         $header_serial_no = $data['header_serial_no'] ?? null;
         $item_serial_no = $data['item_serial_no'] ?? null;
+        $transfer_values = $data['transfer_value'] ?? [];
         $qty = $data['qty'];
         $today = Carbon::today();
         
@@ -279,6 +280,7 @@ class ParController extends Controller {
                     $items->is_lock = 0;
                     $items->added_by = Auth::user()->domainAccount;
                     $items->serial_no = $item_serial_no[$key];
+                    $items->transfer_value = null;
                     $items->save(); 
                 }
 
@@ -345,6 +347,7 @@ class ParController extends Controller {
                     $items->t_cost = $costs[$key];
                     $items->is_lock = 0;
                     $items->serial_no = $item_serial_no[$key];
+                    $items->transfer_value = $transfer_values[$key] ?? null;
                     $items->save();
 
                 }
@@ -367,6 +370,7 @@ class ParController extends Controller {
         $costs = $data['cost'];
         $qty = $data['qty'];
         $serial_no = $data['item_serial_no'];
+        $transfer_values = $data['transfer_value'] ?? [];
         $today = Carbon::today();
         
         $header = accountabilityHeaders::where('id',$request->hid)->update([
@@ -399,6 +403,7 @@ class ParController extends Controller {
                         'qty' => $qty[$key],
                         't_cost' => $costs[$key],
                         'serial_no' => $serial_no[$key],
+                        'transfer_value' => $request->par_type == 'transfer' ? ($transfer_values[$key] ?? null) : null,
                     ]);
 
                 } else {
@@ -410,6 +415,7 @@ class ParController extends Controller {
                     $items->qty = $qty[$key];
                     $items->t_cost = $costs[$key];
                     $items->serial_no = $serial_no[$key] ?? null;
+                    $items->transfer_value = $request->par_type == 'transfer' ? ($transfer_values[$key] ?? null) : null;
                     $items->save();
 
                 }

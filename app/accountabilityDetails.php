@@ -12,7 +12,7 @@ class accountabilityDetails extends Model
 
     protected $fillable = [
         'header_id', 'item','is_new','status','closed_reason','closed_date', 'closed_by', 'new_condition', 'irms_ref',
-        'qty', 't_cost', 'is_lock', 'added_by'
+        'qty', 't_cost', 'is_lock', 'added_by', 'transfer_value'
     ];
 
 	public $table='accountabilityDetails';

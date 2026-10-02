@@ -2,6 +2,27 @@
 
 @section('pagecss')
     <link href="{{ asset('assets/lib/select2/css/select2.min.css') }}" rel="stylesheet">
+<style>
+    @media (min-width: 992px) {
+        .content-body > .container {
+            max-width: none;
+            width: 100%;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+    }
+
+    .transfer-value-column,
+    .transfer-value-cell {
+        width: 16% !important;
+        min-width: 150px;
+    }
+
+    .transfer-value-cell input {
+        width: 100%;
+        min-width: 120px;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -126,6 +147,8 @@
                                               <th class="wd-10p">Qty</th>
                                               <th class="wd-10p">UoM</th>
                                               <th class="wd-10p">Cost</th>
+                                              <th class="wd-10p transfer-value-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Transfer Value</th>
+                                              <th class="wd-10p aging-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Aging</th>
                                               <th class="wd-10p"></th>
                                             </tr>
                                         </thead>
@@ -144,7 +167,9 @@
                                                         <td class="wd-8p"><input type="text" @if($i->serial_no != '') @endif name="item_serial_no[]" value="{{$i->detail_serial_no}}" class="form-control input-xs text-right"></td>
                                                         <td class="wd-8p"><input type="text" @if($i->serial_no != '') @endif name="qty[]" value="{{$i->qty}}" class="form-control input-xs text-right"></td>
                                                         <td class="wd-10p">{{ $i->uom }}</td>
-                                                        <td class="wd-10p"><input type="text" name="cost[]" class="form-control input-xs text-right" value="{{$i->cost}}"></td>        
+                                                        <td class="wd-10p" data-purchase-date="{{ $i->created_at ?? '' }}"><input type="text" name="cost[]" class="form-control input-xs text-right" value="{{$i->cost}}"></td>
+                                                        <td class="wd-10p transfer-value-cell" @if($par->ptype != 'transfer') style="display:none;" @endif><input type="number" step="0.01" min="0" name="transfer_value[]" class="form-control input-xs text-right" value="{{ $i->transfer_value !== null ? $i->transfer_value : number_format($i->cost / 60, 2, '.', '') }}"></td>
+                                                        <td class="wd-10p aging-cell" @if($par->ptype != 'transfer') style="display:none;" @endif data-purchase-date="{{ $i->created_at ?? '' }}">{{ isset($i->created_at) ? \Carbon\Carbon::parse($i->created_at)->diffInMonths(\Carbon\Carbon::today()) : 0 }} mos</td>
                                                         <td class="wd-2p"><a class="btn btn-danger btn-sm item_delete" data-did="{{$i->details_id}}" data-toggle="modal" href="#close-par-item"><i class="fa fa-trash"></i></a></td>
                                                     </tr>
                                                 @endforeach
@@ -217,7 +242,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261002"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -241,6 +266,22 @@
             var isFirstUser = $('#par_type').val() === 'new';
             $('#issuance-date-row').toggle(isFirstUser);
             $('#issuance_date').prop('required', isFirstUser);
+
+            var isTransfer = $('#par_type').val() === 'transfer';
+            $('.transfer-value-column, .transfer-value-cell, .aging-column, .aging-cell').toggle(isTransfer);
+            $('input[name="transfer_value[]"]').prop('required', isTransfer);
+
+            if (isTransfer && window.calculateTransferValue && window.calculateItemAging) {
+                $('#addedItems tr').each(function(){
+                    var $row = $(this);
+                    var $cost = $row.find('input[name="cost[]"]');
+                    var purchaseDate = $row.children('td').eq(7).data('purchase-date');
+                    var aging = window.calculateItemAging(purchaseDate);
+
+                    $row.find('input[name="transfer_value[]"]').val(window.calculateTransferValue($cost.val(), purchaseDate).toFixed(2));
+                    $row.find('.aging-cell').text(aging.months+' mos ('+aging.days+' days)');
+                });
+            }
         });
     </script>
     <script>

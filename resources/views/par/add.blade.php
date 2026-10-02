@@ -2,6 +2,29 @@
 
 @section('pagecss')
     <link href="{{ asset('assets/lib/select2/css/select2.min.css') }}" rel="stylesheet">
+    <style>
+        @media (min-width: 992px) {
+            .content-body > .container {
+                max-width: none;
+                width: 100%;
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+        }
+
+        .transfer-value-column,
+        .transfer-value-cell,
+        #items_tbl td:nth-child(8) {
+            width: 16% !important;
+            min-width: 150px;
+        }
+
+        .transfer-value-cell input,
+        #items_tbl td:nth-child(8) input {
+            width: 100%;
+            min-width: 120px;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -144,6 +167,8 @@
                                           <th class="wd-10p">Qty</th>
                                           <th class="wd-10p">UoM</th>
                                           <th class="wd-10p">Cost</th>
+                                          <th class="wd-10p transfer-value-column" style="display:none;">Transfer Value</th>
+                                          <th class="wd-10p aging-column" style="display:none;">Aging</th>
                                           <th class="wd-10p"></th>
                                         </tr>
                                     </thead>
@@ -186,7 +211,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261002"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -209,6 +234,55 @@
 
             $('#par_type').on('change', toggleIssuanceDate);
             toggleIssuanceDate();
+
+            function toggleTransferValue() {
+                var isTransfer = $('#par_type').val() === 'transfer';
+                $('.transfer-value-column, .transfer-value-cell, .aging-column, .aging-cell').toggle(isTransfer);
+                $('input[name="transfer_value[]"]').prop('required', isTransfer);
+            }
+
+            $('#par_type').on('change', toggleTransferValue);
+            toggleTransferValue();
+
+            window.calculateTransferValue = function(cost, purchaseDate) {
+                var startingValue = parseFloat(cost) || 0;
+                var monthlyDepreciation = startingValue / 60;
+                var elapsedMonths = window.calculateElapsedMonths(purchaseDate);
+
+                return Math.max(0, startingValue - (elapsedMonths * monthlyDepreciation));
+            };
+
+            window.calculateItemAging = function(purchaseDate) {
+                var purchase = purchaseDate ? new Date(String(purchaseDate).replace(' ', 'T')) : new Date();
+                var today = new Date();
+                var days = isNaN(purchase.getTime()) ? 0 : Math.max(0, Math.floor((today - purchase) / 86400000));
+                var months = window.calculateElapsedMonths(purchaseDate, today);
+
+                return { days: days, months: months, years: (months / 12).toFixed(2) };
+            };
+
+            window.toggleTransferSearchFields = function() {
+                var isTransfer = $('#par_type').val() === 'transfer';
+                $('#items_tbl tr[id^="id"]').each(function() {
+                    var $row = $(this);
+                    var $valueCell = $row.children('td').eq(7);
+                    var $agingCell = $row.children('td').eq(8);
+                    var cost = parseFloat($row.children('td').eq(6).text()) || 0;
+                    var purchaseDate = $row.children('td').eq(6).data('purchase-date');
+                    var value = window.calculateTransferValue(cost, purchaseDate).toFixed(2);
+                    var aging = window.calculateItemAging(purchaseDate);
+
+                    if (isTransfer) {
+                        $valueCell.html('<input readonly type="text" class="form-control input-xs text-right" value="'+value+'">');
+                        $agingCell.text(aging.months+' mos ('+aging.days+' days)');
+                    } else {
+                        $valueCell.empty();
+                        $agingCell.empty();
+                    }
+                });
+            };
+
+            toggleTransferSearchFields();
         });
     </script>
 
@@ -333,6 +407,7 @@
                             $('#item_spinner').hide();
                             console.log(data);
                             $('#items_tbl').empty().html(data);
+                            toggleTransferSearchFields();
                         }
 
                     })
@@ -365,6 +440,7 @@
 
         $('#par_type').on('change', function(){
             $('#search').val('');
+            toggleTransferSearchFields();
         });
 
     </script>

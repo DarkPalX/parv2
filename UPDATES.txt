@@ -2,9 +2,9 @@
 
 DONE • Field to input CAPEX Code if item is CAPEX Item
 DONE • Field to input issuance date if accountable person is first user of the item
-• Auto computation of Book Value and running balance of issued/transferred PAR Item (BV = Purchase Value divided by 5 years depreciation period)
-• Field to input Transfer Value (manual input or auto generate TV).
-• PAR shows aging of each item
+DONE • Auto computation of Book Value and running balance of issued/transferred PAR Item (BV = Purchase Value divided by 5 years depreciation period)
+DONE • Field to input Transfer Value (manual input or auto generate TV).
+DONE • PAR shows aging of each item
 • PAR Summary per person or Dept should shows all these additional data.
 • PAR Report shows total remaining book value of all open PAR items
 • New column for 50% of Purchase Cost, Book Value and Chargeable Cost in PAR Summary – for easy viewing and reference
@@ -27,6 +27,9 @@ QUERY:
 
 	ALTER TABLE accountabilityHeaders
 		ADD issuance_date DATETIME NULL;
+
+	ALTER TABLE accountabilityDetails
+		ADD transfer_value DECIMAL DEFAULT 0;
 
 
 
