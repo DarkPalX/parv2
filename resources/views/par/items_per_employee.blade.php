@@ -67,7 +67,8 @@
                             @if($i->status != 'CLOSED' && $i->doc_status != 'CLOSED')
                             <tr>
                                 <td class="tx-color-03 tx-normal">{{ $i->document_date }}</td>
-                                <td class="tx-medium">{{ $i->refcode }}</td>
+                                <td class="tx-medium">{{ App\accountabilityHeaders::getNewRefCode($i->refcode) ?? $i->refcode }}</td>
+                                {{-- <td class="tx-medium">{{ $i->refcode }}</td> --}}
                                 <td class="tx-medium">{{ $i->description }}</td>
                                 <td class="tx-color-03 tx-normal">{{ $i->serial_no }}</td>
                                 <td class="tx-color-03 tx-normal">{{ $i->status }}</td>

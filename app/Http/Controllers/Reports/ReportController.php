@@ -47,9 +47,19 @@ class ReportController extends Controller {
         // }
     }
 
-    public function contractor()
+    public function contractor(Request $request)
     {
-        $contractors = Contractor::paginate(10);
+        $search = trim($request->input('search', ''));
+
+        $contractors = Contractor::when($search !== '', function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('contractor_id', 'like', "%{$search}%")
+                    ->orWhere('contractor_fname', 'like', "%{$search}%")
+                    ->orWhere('contractor_mname', 'like', "%{$search}%")
+                    ->orWhere('contractor_lname', 'like', "%{$search}%")
+                    ->orWhere('contractor_dept', 'like', "%{$search}%");
+            });
+        })->paginate(10)->appends($request->query());
 
         return view('reports.contractor',compact('contractors'));
     }

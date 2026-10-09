@@ -22,7 +22,10 @@ class ExportItemStatus implements FromCollection, WithHeadings
 
     public function collection()
     {
-        return parDetails::select('header_id','accountable','document_date','serial_no','doc_ref','stock_code','description','dept','doc_status','status','qty','t_cost','added_by')->where('status',$this->r->status)->whereBetween('document_date',[$this->r->from,$this->r->to])->orderBy('header_id','desc')->get();
+        return parDetails::select('header_id','accountable','document_date','serial_no','doc_ref','stock_code','description','dept','doc_status','status','qty','t_cost','added_by')->where('status',$this->r->status)->whereBetween('document_date',[$this->r->from,$this->r->to])->orderBy('header_id','desc')->get()->map(function ($row) {
+            $row->header_id = \App\accountabilityHeaders::getNewRefCode($row->header_id) ?? $row->header_id;
+            return $row;
+        });
     }
 
     public function headings(): array

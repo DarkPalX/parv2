@@ -24,10 +24,16 @@
         <div class="card">
             <div class="card-body pd-20">
                 <h6>Search Contractor</h6>  
-                <div class="form-inline">
-                    <input type="text" name="" class="form-control col-md-3" placeholder="Contractor Name">
-                    <button class="btn btn-primary ml-1"><i class="fa fa-search"></i></button>
-                </div>
+                <form method="GET" action="{{ url('/report/contractor') }}" class="form-inline">
+                    <input type="text"
+                           name="search"
+                           value="{{ request('search') }}"
+                           class="form-control col-md-3"
+                           placeholder="Contractor Name">
+                    <button type="submit" class="btn btn-primary ml-1">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>

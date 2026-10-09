@@ -6,6 +6,48 @@
         .content {
             overflow: hidden;
         }
+
+        .content-body > .container {
+            max-width: none;
+            width: 100%;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+
+        #department_tbl {
+            width: 100%;
+        }
+
+        #department_tbl .df-example,
+        #department_tbl .table-responsive {
+            width: 100%;
+        }
+
+        #department_tbl .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #department_tbl table {
+            min-width: 1500px;
+            table-layout: auto !important;
+        }
+
+        #department_tbl th,
+        #department_tbl td {
+            min-width: 70px;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.35;
+            vertical-align: top;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+        #department_tbl th {
+            white-space: nowrap;
+        }
+
         @media print{
             .filter { display: none; }
             .b-head { display: none; }

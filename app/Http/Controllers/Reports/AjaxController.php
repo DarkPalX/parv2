@@ -151,7 +151,7 @@ class AjaxController extends Controller
 
                     $output .= '<tbody>'.
                                     '<tr class="tx-13">'.
-                                        '<td>'.$d->refcode.'</td>'.
+                                        '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
@@ -278,7 +278,7 @@ class AjaxController extends Controller
 
                     $output .= '<tbody>'.
                                     '<tr class="tx-13">'.
-                                        '<td>'.$d->refcode.'</td>'.
+                                        '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
@@ -382,7 +382,7 @@ class AjaxController extends Controller
 
                     $output .= '<tbody>'.
                                     '<tr class="tx-13">'.
-                                        '<td>'.$d->refcode.'</td>'.
+                                        '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
@@ -474,7 +474,7 @@ class AjaxController extends Controller
 
                     $output .= '<tbody>'.
                                     '<tr class="tx-13">'.
-                                        '<td>'.$d->refcode.'</td>'.
+                                        '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
@@ -592,7 +592,7 @@ class AjaxController extends Controller
 
                     $output .= '<tbody>'.
                                     '<tr class="tx-13">'.
-                                        '<td>'.$d->refcode.'</td>'.
+                                        '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
@@ -692,7 +692,7 @@ class AjaxController extends Controller
 
                     $output .= '<tbody>'.
                                     '<tr class="tx-13">'.
-                                        '<td>'.$d->refcode.'</td>'.
+                                        '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.

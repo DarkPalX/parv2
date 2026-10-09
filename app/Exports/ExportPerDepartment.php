@@ -35,7 +35,7 @@ class ExportPerDepartment implements FromCollection, WithHeadings
 
         return $collection->map(function ($row) {
             $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
-            return [$row->header_id, $row->accountable, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->dept, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+            return [(\App\accountabilityHeaders::getNewRefCode($row->header_id) ?? $row->header_id), $row->accountable, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->dept, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
         });
 
     }
