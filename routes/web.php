@@ -222,6 +222,7 @@ Route::group(['middleware' => ['authenticated', 'rolecheck']], function(){
 	// Contractor Routes
 	Route::get('/maintenance/contractor','Maintenance\ContractorController@index');
 	Route::post('/contractor/store','Maintenance\ContractorController@store');
+	Route::post('/contractor/update','Maintenance\ContractorController@update');
 	Route::post('/upload/contractors', 'FileController@upload_contractors');
 
 	// Dept Routes

@@ -31,4 +31,19 @@ class ContractorController extends Controller {
 
         return back()->with('success','Contractor successfully saved!');
     }
+
+    public function update(Request $req)
+    {
+        $contractor = Contractor::where('contractor_id', $req->original_cid)->firstOrFail();
+
+        $contractor->update([
+            'contractor_id' => $req->cid,
+            'contractor_fname' => $req->c_fname,
+            'contractor_lname' => $req->c_lname,
+            'contractor_mname' => $req->c_mname,
+            'contractor_dept' => $req->c_dept
+        ]);
+
+        return back()->with('success','Contractor successfully updated!');
+    }
 }

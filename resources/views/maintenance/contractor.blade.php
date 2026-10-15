@@ -45,7 +45,17 @@
                             <td>{{$con->contractor_fname}} {{$con->contractor_mname}} {{$con->contractor_lname}}</td>
                             <td>{{$con->contractor_dept}}</td>
                             <td>
-                                <a href="#" class="btn btn-sm btn-primary"><i data-feather="edit"></i></a>
+                                <a href="#editContractor"
+                                   data-toggle="modal"
+                                   data-original-cid="{{ $con->contractor_id }}"
+                                   data-cid="{{ $con->contractor_id }}"
+                                   data-fname="{{ $con->contractor_fname }}"
+                                   data-mname="{{ $con->contractor_mname }}"
+                                   data-lname="{{ $con->contractor_lname }}"
+                                   data-dept="{{ $con->contractor_dept }}"
+                                   class="btn btn-sm btn-primary edit-contractor">
+                                    <i data-feather="edit"></i>
+                                </a>
                             </td>
                         </tr>
                         @empty
@@ -59,6 +69,58 @@
                     <div class="pd-10">{{ $contractors->links() }}</div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editContractor" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered wd-sm-650" role="document">
+        <div class="modal-content">
+            <div class="modal-header pd-y-20 pd-x-20 pd-sm-x-30">
+                <a href="" role="button" class="close pos-absolute t-15 r-15" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </a>
+                <div class="media align-items-center">
+                    <span class="tx-color-03 d-none d-sm-block"><i data-feather="edit" class="wd-60 ht-60"></i></span>
+                    <div class="media-body mg-sm-l-20">
+                        <h4 class="tx-18 tx-sm-20 mg-b-2">Edit Contractor Info</h4>
+                    </div>
+                </div>
+            </div>
+            <form action="{{ url('/contractor/update') }}" method="post">
+                @csrf
+                <input type="hidden" name="original_cid" id="edit_original_cid">
+                <div class="modal-body pd-sm-t-30 pd-sm-b-40 pd-sm-x-30">
+                    <div class="row row-sm mg-t-5">
+                        <div class="col-sm-5">
+                            <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Contractor ID <i class="tx-danger">*</i></label>
+                            <input required type="text" name="cid" id="edit_cid" class="form-control">
+                        </div>
+                        <div class="col-sm">
+                            <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">First Name <i class="tx-danger">*</i></label>
+                            <input required type="text" name="c_fname" id="edit_fname" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row row-sm mg-t-15">
+                        <div class="col-sm-5">
+                            <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Middle Name <i class="tx-danger">*</i></label>
+                            <input required type="text" name="c_mname" id="edit_mname" class="form-control">
+                        </div>
+                        <div class="col-sm">
+                            <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Last Name <i class="tx-danger">*</i></label>
+                            <input required type="text" name="c_lname" id="edit_lname" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group mg-t-15">
+                        <label class="tx-10 tx-uppercase tx-medium tx-spacing-1 mg-b-5 tx-color-03">Department <i class="tx-danger">*</i></label>
+                        <input required type="text" name="c_dept" id="edit_dept" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer pd-x-20 pd-y-15">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Info</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -142,6 +204,17 @@
 @endsection
 
 @section('pagejs')
+<script>
+    $(document).on('click', '.edit-contractor', function () {
+        var button = $(this);
 
+        $('#edit_original_cid').val(button.data('original-cid'));
+        $('#edit_cid').val(button.data('cid'));
+        $('#edit_fname').val(button.data('fname'));
+        $('#edit_mname').val(button.data('mname'));
+        $('#edit_lname').val(button.data('lname'));
+        $('#edit_dept').val(button.data('dept'));
+    });
+</script>
 @endsection
 
