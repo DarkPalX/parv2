@@ -130,9 +130,33 @@ class ItemController extends Controller
         return back()->with('success','Item successfully saved!');
     }
 
-    public function non_stock()
+    public function non_stock(Request $request)
     {
-        $items = Items::where('stock_code','=',NULL)->orderBy('id','desc')->paginate(20);
+        $query = Items::whereNull('stock_code');
+
+        $filters = [
+            'itemid'     => 'id',
+            'dscptn'     => 'description',
+            'exptyp'     => 'expense_type',
+            'capex_code' => 'capex_code',
+            'serial'     => 'serial_no',
+            'assetc'     => 'asset_code',
+            'po_num'     => 'po_no',
+            'dr_num'     => 'dr_no',
+        ];
+
+        foreach ($filters as $requestName => $column) {
+            $value = trim($request->input($requestName, ''));
+
+            if ($value !== '') {
+                $query->where($column, 'LIKE', "%{$value}%");
+            }
+        }
+
+        $items = $query->orderBy('id', 'desc')
+            ->paginate(20)
+            ->appends($request->except('page'));
+
         return view('Item.non_stock',compact('items'));
     }
 
@@ -142,9 +166,32 @@ class ItemController extends Controller
         return view('Item.ppe',compact('items'));
     }
 
-    public function stocked()
+    public function stocked(Request $request)
     {
-        $items = Items::where('stock_code','<>','')->orderBy('id','desc')->paginate(20);
+        $query = Items::whereNotNull('stock_code')
+            ->where('stock_code', '<>', '');
+
+        $filters = [
+            'scode' => 'stock_code',
+            'icode' => 'inv_code',
+            'descr' => 'description',
+            'serial' => 'serial_no',
+            'oemid' => 'oem_id',
+            'uom' => 'uom',
+            'extyp' => 'expense_type',
+        ];
+
+        foreach ($filters as $requestName => $column) {
+            $value = trim($request->input($requestName, ''));
+
+            if ($value !== '') {
+                $query->where($column, 'LIKE', "%{$value}%");
+            }
+        }
+
+        $items = $query->orderBy('id', 'desc')
+            ->paginate(20)
+            ->appends($request->except('page'));
 
         return view('Item.stocked_items',compact('items'));
     }

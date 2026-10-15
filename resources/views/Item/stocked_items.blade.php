@@ -23,19 +23,17 @@
                 <div class="card-body pd-y-15 pd-x-10">
                     <div class="table-responsive">
                         <div class="table-responsive">
+                            <form id="filter_saved_stock_item" method="GET" action="{{ url('/item/stocked') }}"></form>
                             <table class="table mg-b-0 table-striped">
                                 <thead>
-                                    <form id="filter_saved_stock_item">
-                                    @csrf
-                                        <th><input type="text" name="scode" class="form-control"></th>
-                                        <th><input type="text" name="icode" class="form-control"></th>
-                                        <th><input type="text" name="descr" class="form-control"></th>
-                                        <th><input type="text" name="serial" class="form-control"></th>
-                                        <th><input type="text" name="oemid" class="form-control"></th>
-                                        <th><input type="text" name="uom"   class="form-control"></th>
-                                        <th><input type="text" name="extyp" class="form-control"></th>
-                                        <th><button type="submit" class="btn btn-primary"><i data-feather="filter"></i></button></th>
-                                    </form>
+                                        <th><input form="filter_saved_stock_item" type="text" name="scode" value="{{ request('scode') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_stock_item" type="text" name="icode" value="{{ request('icode') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_stock_item" type="text" name="descr" value="{{ request('descr') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_stock_item" type="text" name="serial" value="{{ request('serial') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_stock_item" type="text" name="oemid" value="{{ request('oemid') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_stock_item" type="text" name="uom" value="{{ request('uom') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_stock_item" type="text" name="extyp" value="{{ request('extyp') }}" class="form-control"></th>
+                                        <th><button form="filter_saved_stock_item" type="submit" class="btn btn-primary"><i data-feather="filter"></i></button></th>
                                 </thead>
                                 <thead class="thead-secondary">
                                     <tr>
@@ -114,18 +112,5 @@
             $(".modal-body #iid").val($(this).data('id'));
         });
 
-        $(document).ready(function(){
-            $('#filter_saved_stock_item').submit(function(e){
-                e.preventDefault();
-                $.ajax({
-                    type: "GET",
-                    url: "/filter/saved-stock-items",
-                    data: $('#filter_saved_stock_item').serialize(),
-                    success: function( response ) {
-                        $('#items_tbl').html(response);  
-                    }
-                });
-            });
-        });
     </script>
 @endsection

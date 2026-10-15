@@ -23,21 +23,19 @@
                 <div class="card-body pd-y-15 pd-x-10">
                     <div class="table-responsive">
                         <div class="table-responsive">
+                            <form id="filter_saved_nonstock_item" method="GET" action="{{ url('/item/non-stock') }}"></form>
                             <table class="table mg-b-0 table-striped">
                                 <thead>
-                                    <form id="filter_saved_nonstock_item">
-                                    @csrf
-                                        <th><input type="text" name="itemid" class="form-control"></th>
-                                        <th><input type="text" name="dscptn" class="form-control"></th>
-                                        <th><input type="text" name="exptyp" class="form-control"></th>
-                                        <th><input type="text" name="capex_code" class="form-control"></th>
-                                        <th><input type="text" name="serial" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="itemid" value="{{ request('itemid') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="dscptn" value="{{ request('dscptn') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="exptyp" value="{{ request('exptyp') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="capex_code" value="{{ request('capex_code') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="serial" value="{{ request('serial') }}" class="form-control"></th>
                                         <th></th>
-                                        <th><input type="text" name="assetc"   class="form-control"></th>
-                                        <th><input type="text" name="po_num" class="form-control"></th>
-                                        <th><input type="text" name="dr_num" class="form-control"></th>
-                                        <th><button type="submit" class="btn btn-primary"><i data-feather="filter"></i></button></th>
-                                    </form>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="assetc" value="{{ request('assetc') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="po_num" value="{{ request('po_num') }}" class="form-control"></th>
+                                        <th><input form="filter_saved_nonstock_item" type="text" name="dr_num" value="{{ request('dr_num') }}" class="form-control"></th>
+                                        <th><button form="filter_saved_nonstock_item" type="submit" class="btn btn-primary"><i data-feather="filter"></i></button></th>
                                 </thead>
                                 <thead class="thead-secondary">
                                     <tr>
@@ -115,22 +113,6 @@
             $(".modal-body #det").val( details );
             $(".modal-body #track").val( tracking );
             $(".modal-body #tid").val( tid );
-        });
-    </script>
-    
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('#filter_saved_nonstock_item').submit(function(e){
-                e.preventDefault();
-                $.ajax({
-                    type: "GET",
-                    url: "/filter/saved-nonstock-items",
-                    data: $('#filter_saved_nonstock_item').serialize(),
-                    success: function( response ) {
-                        $('#items_tbl').html(response);  
-                    }
-                });
-            });
         });
     </script>
 @endsection

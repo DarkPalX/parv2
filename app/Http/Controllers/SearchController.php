@@ -378,7 +378,9 @@ class SearchController extends Controller
     public function filter_saved_nonstock_items(Request $req){
         
         if($req->ajax()){
-            $items = Items::where('item_kind','=',2)
+            // Keep the search criteria consistent with ItemController@non_stock,
+            // which identifies non-stock items by a NULL stock_code.
+            $items = Items::whereNull('stock_code')
                 ->where('id','LIKE',"$req->itemid%")
                 ->where('description','LIKE',"$req->dscptn%")
                 ->where('expense_type','LIKE',"$req->exptyp%")
