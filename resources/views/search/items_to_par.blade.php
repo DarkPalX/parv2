@@ -1,5 +1,5 @@
 <div class="table-responsive">
-	<table class="table table-sm table-striped mg-t-4">
+	<table class="table table-sm table-striped mg-t-4 par-search-table">
 		<tbody>
 			@forelse($items as $item)
 				@php
@@ -17,8 +17,8 @@
 							<td class="wd-20p">{{ $item->serial_no }}</td>
 							<td class="wd-10p">{{ $item->qty }}</td>
 							<td class="wd-10p">{{ $item->uom }}</td>
-							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-							<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 							<td class="wd-10p aging-search-cell"></td>
 							<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 						</tr>
@@ -34,8 +34,8 @@
 									<td class="wd-20p">{{ $item->serial_no }}</td>
 									<td class="wd-10p">{{ $item->qty }}</td>
 									<td class="wd-10p">{{ $item->uom }}</td>
-									<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-									<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 									<td class="wd-10p aging-search-cell"></td>
 									<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 								</tr>
@@ -48,8 +48,8 @@
 								<td class="wd-20p">{{ $item->serial_no }}</td>
 								<td class="wd-10p">{{ $item->qty }}</td>
 								<td class="wd-10p">{{ $item->uom }}</td>
-									<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-								<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 								<td class="wd-10p aging-search-cell"></td>
 								<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 							</tr>
@@ -62,8 +62,8 @@
 							<td class="wd-20p">{{ $item->serial_no }}</td>
 							<td class="wd-10p">{{ $item->qty }}</td>
 							<td class="wd-10p">{{ $item->uom }}</td>
-									<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-							<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 							<td class="wd-10p aging-search-cell"></td>
 							<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 						</tr>
@@ -96,8 +96,8 @@
 							<td class="wd-20p">{{ $item->serial_no }}</td>
 							<td class="wd-10p">{{ $item->qty }}</td>
 							<td class="wd-10p">{{ $item->uom }}</td>
-							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-							<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 							<td class="wd-10p aging-search-cell"></td>
 							<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 						</tr>
@@ -112,8 +112,8 @@
 								<td class="wd-20p">{{ $item->serial_no }}</td>
 								<td class="wd-10p">{{ $item->qty }}</td>
 								<td class="wd-10p">{{ $item->uom }}</td>
-							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-									<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 									<td class="wd-10p aging-search-cell"></td>
 								<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 							</tr>
@@ -126,8 +126,8 @@
 							<td class="wd-20p">{{ $item->serial_no }}</td>
 							<td class="wd-10p">{{ $item->qty }}</td>
 							<td class="wd-10p">{{ $item->uom }}</td>
-							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ $item->cost }}</td>
-								<td class="wd-10p"></td>
+							<td class="wd-10p transfer-cost" data-purchase-date="{{ $item->created_at }}">{{ number_format($item->cost, 2) }}</td>
+							<td class="wd-10p transfer-value-search-cell" @if($type != 'transfer') style="display:none;" @endif>{{ number_format($calculatedTransferValue, 2) }}</td>
 								<td class="wd-10p aging-search-cell"></td>
 							<td class="wd-10p"><a href="#" class="btn btn-xs btn-primary" onclick='addToItem("{{$item->id}}","{{$item->stock_code}}","{{$desc}}","{{$item->uom}}","{{$item->serial_no}}","{{$item->cost}}","{{$item->qty}}");' role="button">Add</a></td>
 						</tr>

@@ -12,21 +12,32 @@
         }
     }
 
-    .par-item-table { table-layout: fixed; min-width: 980px; }
+    .par-item-table { table-layout: fixed; min-width: 900px; }
     .par-item-table th, .par-item-table td { padding: .35rem .25rem; vertical-align: middle; }
-    .par-item-table .par-id-cell { width: 7%; }
-    .par-item-table .par-stock-cell { width: 9%; }
-    .par-item-table .par-description-cell { width: 23%; }
-    .par-item-table .par-serial-cell { width: 14%; }
-    .par-item-table .par-qty-cell { width: 6%; }
-    .par-item-table .par-uom-cell { width: 6%; }
+    .par-item-table .par-id-cell { width: 5%; }
+    .par-item-table .par-stock-cell { width: 7%; }
+    .par-item-table .par-description-cell { width: 28%; }
+    .par-item-table .par-serial-cell { width: 13%; }
+    .par-item-table .par-qty-cell { width: 5%; }
+    .par-item-table .par-uom-cell { width: 5%; }
     .par-item-table .par-cost-cell { width: 9%; }
     .par-item-table .transfer-value-column, .par-item-table .transfer-value-cell { width: 10%; }
-    .par-item-table .aging-column, .par-item-table .par-aging-cell { width: 12%; }
-    .par-item-table .par-action-cell { width: 4%; }
+    .par-item-table .aging-column, .par-item-table .par-aging-cell { width: 15%; }
+    .par-item-table .par-action-cell { width: 3%; }
     .par-item-table input { width: 100%; min-width: 0; }
-    .par-aging-cell, .aging-search-cell { white-space: normal; line-height: 1.2; font-size: .75rem; }
-    .par-aging-created { display: block; margin-top: 2px; color: #6c757d; font-size: .65rem; }
+    .par-search-table { table-layout: fixed; min-width: 900px; }
+    .par-search-table td:nth-child(1) { width: 5%; }
+    .par-search-table td:nth-child(2) { width: 7%; }
+    .par-search-table td:nth-child(3) { width: 28%; }
+    .par-search-table td:nth-child(4) { width: 13%; }
+    .par-search-table td:nth-child(5) { width: 5%; }
+    .par-search-table td:nth-child(6) { width: 5%; }
+    .par-search-table td:nth-child(7) { width: 9%; }
+    .par-search-table td:nth-child(8) { width: 10%; }
+    .par-search-table td:nth-child(9) { width: 15%; }
+    .par-search-table td:nth-child(10) { width: 3%; }
+    .par-aging-cell, .aging-search-cell { white-space: normal; line-height: 1.2; font-size: .8rem; }
+    .par-aging-created { display: block; margin-top: 2px; color: #6c757d; font-size: .7rem; }
 </style>
 @endsection
 
@@ -293,6 +304,24 @@
                     $row.find('.aging-cell').html(window.formatItemAgingHtml(aging, purchaseDate));
                 });
             }
+
+            window.toggleTransferSearchFields = function() {
+                var showAging = $('#par_type').val() === 'transfer';
+
+                $('#items_tbl tr[id^="id"]').each(function(){
+                    var $row = $(this);
+                    var $agingCell = $row.children('td').eq(8);
+                    var purchaseDate = $row.children('td').eq(6).data('purchase-date');
+
+                    if (showAging && window.calculateItemAging && window.formatItemAgingHtml) {
+                        $agingCell.html(window.formatItemAgingHtml(window.calculateItemAging(purchaseDate), purchaseDate));
+                    } else {
+                        $agingCell.empty();
+                    }
+                });
+            };
+
+            window.toggleTransferSearchFields();
         });
     </script>
     <script>
@@ -387,6 +416,7 @@
                         success : function(data){
                             $('#item_spinner').hide();
                             $('#items_tbl').empty().html(data);
+                            toggleTransferSearchFields();
                         }
 
                     })
