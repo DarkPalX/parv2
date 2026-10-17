@@ -35,12 +35,32 @@
         return Math.max(0, months);
     };
 
+    window.calculateElapsedDays = function(purchaseDate, endDate) {
+        var purchase = window.parseDepreciationDate(purchaseDate);
+        var end = window.parseDepreciationDate(endDate) || new Date();
+
+        if (!purchase || !end) {
+            return 0;
+        }
+
+        var purchaseUtc = Date.UTC(purchase.getFullYear(), purchase.getMonth(), purchase.getDate());
+        var endUtc = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+
+        return Math.max(0, Math.round((endUtc - purchaseUtc) / (1000 * 60 * 60 * 24)));
+    };
+
     window.calculateTransferValue = function(cost, purchaseDate) {
         var startingValue = parseFloat(cost) || 0;
-        var monthlyDepreciation = startingValue / 60;
-        var elapsedMonths = window.calculateElapsedMonths(purchaseDate);
+        var purchase = window.parseDepreciationDate(purchaseDate);
 
-        return Math.max(0, startingValue - (elapsedMonths * monthlyDepreciation));
+        if (!purchase) {
+            return startingValue;
+        }
+
+        var elapsedDays = window.calculateElapsedDays(purchaseDate);
+        var annualDepreciation = startingValue / 5;
+
+        return Math.max(0, startingValue - ((elapsedDays / 365) * annualDepreciation));
     };
 
     window.calculateItemAging = function(purchaseDate) {

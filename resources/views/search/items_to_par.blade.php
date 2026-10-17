@@ -4,8 +4,8 @@
 			@forelse($items as $item)
 				@php
 					$desc = str_replace(array("'",'"'),'`',$item->description);
-					$ageInMonths = isset($item->created_at) ? \Carbon\Carbon::parse($item->created_at)->diffInMonths(\Carbon\Carbon::today()) : 0;
-					$calculatedTransferValue = max(0, (float) $item->cost - ($ageInMonths * ((float) $item->cost / 60)));
+					$ageInDays = isset($item->created_at) ? \Carbon\Carbon::parse($item->created_at)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
+					$calculatedTransferValue = max(0, (float) $item->cost - (($ageInDays / 365) * ((float) $item->cost / 5)));
 				@endphp
 				
 				@if($type == 'transfer')

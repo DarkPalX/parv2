@@ -225,7 +225,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}?v=20261016"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261018"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -260,10 +260,16 @@
 
             window.calculateTransferValue = function(cost, purchaseDate) {
                 var startingValue = parseFloat(cost) || 0;
-                var monthlyDepreciation = startingValue / 60;
-                var elapsedMonths = window.calculateElapsedMonths(purchaseDate);
+                var purchase = window.parseDepreciationDate(purchaseDate);
 
-                return Math.max(0, startingValue - (elapsedMonths * monthlyDepreciation));
+                if (!purchase) {
+                    return startingValue;
+                }
+
+                var elapsedDays = window.calculateElapsedDays(purchaseDate);
+                var annualDepreciation = startingValue / 5;
+
+                return Math.max(0, startingValue - ((elapsedDays / 365) * annualDepreciation));
             };
 
             window.calculateItemAging = function(purchaseDate) {
