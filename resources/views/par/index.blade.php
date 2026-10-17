@@ -222,11 +222,12 @@
                                 <thead class="thead-secondary">
                                     <tr class="tx-12">
                                         <th class="wd-10p">Stock Code</th>
-                                        <th class="wd-45p">Description</th>
+                                        <th class="wd-40p">Description</th>
                                         <th class="wd-10p">Serial #</th>
                                         <th class="wd-10p">Status</th>
                                         <th class="wd-5p">Qty</th>
-                                        <th class="wd-10p">Cost</th>
+                                        <th class="wd-8p">Cost</th>
+                                        <th class="wd-10p">Transfer Value</th>
                                         <th class="wd-10p"></th>
                                         {{-- <th class="wd-10p">Cost</th> --}}
                                         <th>
@@ -252,6 +253,8 @@
                                         </td>
                                         <td>{{ $i->qty <= 0 ? 0 : $i->qty }}</td>
                                         <td>{{ number_format($i->cost,2) }}</td>
+                                        @php $transferValue = $transferValues[$i->id] ?? ($i->transfer_value ?? null); @endphp
+                                        <td>{{ $transferValue !== null ? number_format($transferValue, 2) : '—' }}</td>
                                         
                                         <td>
                                             

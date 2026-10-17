@@ -12,18 +12,21 @@
             }
         }
 
-        .transfer-value-column,
-        .transfer-value-cell,
-        #items_tbl td:nth-child(8) {
-            width: 16% !important;
-            min-width: 150px;
-        }
-
-        .transfer-value-cell input,
-        #items_tbl td:nth-child(8) input {
-            width: 100%;
-            min-width: 120px;
-        }
+        .par-item-table { table-layout: fixed; min-width: 980px; }
+        .par-item-table th, .par-item-table td { padding: .35rem .25rem; vertical-align: middle; }
+        .par-item-table .par-id-cell { width: 7%; }
+        .par-item-table .par-stock-cell { width: 9%; }
+        .par-item-table .par-description-cell { width: 23%; }
+        .par-item-table .par-serial-cell { width: 14%; }
+        .par-item-table .par-qty-cell { width: 6%; }
+        .par-item-table .par-uom-cell { width: 6%; }
+        .par-item-table .par-cost-cell { width: 9%; }
+        .par-item-table .transfer-value-column, .par-item-table .transfer-value-cell { width: 10%; }
+        .par-item-table .aging-column, .par-item-table .par-aging-cell { width: 12%; }
+        .par-item-table .par-action-cell { width: 4%; }
+        .par-item-table input { width: 100%; min-width: 0; }
+        .par-aging-cell, .aging-search-cell { white-space: normal; line-height: 1.2; font-size: .75rem; }
+        .par-aging-created { display: block; margin-top: 2px; color: #6c757d; font-size: .65rem; }
     </style>
 @endsection
 
@@ -157,19 +160,19 @@
                     <div class="form-row mg-b-10">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-sm mg-b-0">
+                                 <table class="table table-sm mg-b-0 par-item-table">
                                     <thead class="thead-secondary">
                                         <tr>
-                                          <th class="wd-10p">ID</th>
-                                          <th class="wd-10p">Stock Code</th>
-                                          <th class="wd-30p">Description</th>
-                                          <th class="wd-20p">Serial #</th>
-                                          <th class="wd-10p">Qty</th>
-                                          <th class="wd-10p">UoM</th>
-                                          <th class="wd-10p">Cost</th>
+                                          <th class="par-id-cell">ID</th>
+                                          <th class="par-stock-cell">Stock Code</th>
+                                          <th class="par-description-cell">Description</th>
+                                          <th class="par-serial-cell">Serial #</th>
+                                          <th class="par-qty-cell">Qty</th>
+                                          <th class="par-uom-cell">UoM</th>
+                                          <th class="par-cost-cell">Cost</th>
                                           <th class="wd-10p transfer-value-column" style="display:none;">Transfer Value</th>
-                                          <th class="wd-10p aging-column" style="display:none;">Aging</th>
-                                          <th class="wd-10p"></th>
+                                           <th class="aging-column" style="display:none;">Aging</th>
+                                           <th class="par-action-cell"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="addedItems">
@@ -211,7 +214,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}?v=20261002"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261016"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -255,28 +258,22 @@
             window.calculateItemAging = function(purchaseDate) {
                 var purchase = purchaseDate ? new Date(String(purchaseDate).replace(' ', 'T')) : new Date();
                 var today = new Date();
-                var days = isNaN(purchase.getTime()) ? 0 : Math.max(0, Math.floor((today - purchase) / 86400000));
                 var months = window.calculateElapsedMonths(purchaseDate, today);
 
-                return { days: days, months: months, years: (months / 12).toFixed(2) };
+                return { months: months, years: Math.floor(months / 12), remainingMonths: months % 12 };
             };
 
             window.toggleTransferSearchFields = function() {
                 var isTransfer = $('#par_type').val() === 'transfer';
                 $('#items_tbl tr[id^="id"]').each(function() {
                     var $row = $(this);
-                    var $valueCell = $row.children('td').eq(7);
                     var $agingCell = $row.children('td').eq(8);
-                    var cost = parseFloat($row.children('td').eq(6).text()) || 0;
                     var purchaseDate = $row.children('td').eq(6).data('purchase-date');
-                    var value = window.calculateTransferValue(cost, purchaseDate).toFixed(2);
                     var aging = window.calculateItemAging(purchaseDate);
 
                     if (isTransfer) {
-                        $valueCell.html('<input readonly type="text" class="form-control input-xs text-right" value="'+value+'">');
-                        $agingCell.text(aging.months+' mos ('+aging.days+' days)');
+                        $agingCell.html(window.formatItemAgingHtml(aging, $row.children('td').eq(6).data('purchase-date')));
                     } else {
-                        $valueCell.empty();
                         $agingCell.empty();
                     }
                 });

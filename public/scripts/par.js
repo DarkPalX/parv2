@@ -46,14 +46,25 @@
     window.calculateItemAging = function(purchaseDate) {
         var purchase = window.parseDepreciationDate(purchaseDate) || new Date();
         var today = new Date();
-        var days = isNaN(purchase.getTime()) ? 0 : Math.max(0, Math.floor((today - purchase) / 86400000));
         var months = window.calculateElapsedMonths(purchaseDate, today);
 
         return {
-            days: days,
             months: months,
-            years: (months / 12).toFixed(2)
+            years: Math.floor(months / 12),
+            remainingMonths: months % 12
         };
+    };
+
+    window.formatItemAging = function(aging) {
+        return (aging.months / 12).toFixed(1) + ' years';
+    };
+
+    window.formatItemAgingHtml = function(aging, purchaseDate) {
+        var created = window.parseDepreciationDate(purchaseDate);
+        var createdText = created ? created.getFullYear() + '-' + String(created.getMonth() + 1).padStart(2, '0') + '-' + String(created.getDate()).padStart(2, '0') : '';
+        var createdLine = createdText ? '<small class="par-aging-created">Created: ' + createdText + '</small>' : '';
+
+        return '<span>' + window.formatItemAging(aging) + '</span>' + createdLine;
     };
 
     $('#e_type').on('change', function(){
@@ -122,8 +133,9 @@
             transferValue = window.calculateTransferValue(cost, purchaseDate);
         }
         var transferValueCell = '<td class="wd-10p transfer-value-cell" '+($('#par_type').val() === 'transfer' ? '' : 'style="display:none;"')+'><input type="number" step="0.01" min="0" name="transfer_value[]" class="form-control input-xs text-right" value="'+transferValue.toFixed(2)+'"></td>';
-        var aging = window.calculateItemAging ? window.calculateItemAging($(sourceRow).find('.transfer-cost').data('purchase-date')) : { years: '0.00', days: 0 };
-        var agingCell = '<td class="wd-10p aging-cell" '+($('#par_type').val() === 'transfer' ? '' : 'style="display:none;"')+'>'+aging.months+' mos ('+aging.days+' days)</td>';
+        var aging = window.calculateItemAging ? window.calculateItemAging($(sourceRow).find('.transfer-cost').data('purchase-date')) : { years: 0, remainingMonths: 0 };
+        var agingText = window.formatItemAgingHtml ? window.formatItemAgingHtml(aging, $(sourceRow).find('.transfer-cost').data('purchase-date')) : '0.0 years';
+        var agingCell = '<td class="par-aging-cell aging-cell" '+($('#par_type').val() === 'transfer' ? '' : 'style="display:none;"')+'>'+agingText+'</td>';
 
         if(serial == ''){
             $('#addedItems').append('<tr id="tr'+id+'">'+
@@ -131,10 +143,10 @@
                 '<td class="wd-10p">'+id+'</td>'+
                 '<td class="wd-10p">'+stockcode+'</td>'+
                 '<td class="wd-30p">'+desc+'</td>'+
-                '<td class="wd-20p"><input required type="text" name="item_serial_no[]" id="item_serial_no'+id+'" value="" class="form-control input-xs text-right"></td>'+
-                '<td class="wd-10p"><input required type="text" name="qty[]" id="qty'+id+'" value="" class="form-control input-xs text-right"></td>'+
-                '<td class="wd-10p">'+uom+'</td>'+
-                '<td class="wd-10p"><input type="text" id="cost_'+id+'" name="cost[]" class="form-control input-xs text-right" value="'+cost+'"></td>'+
+                '<td class="par-serial-cell"><input required type="text" name="item_serial_no[]" id="item_serial_no'+id+'" value="" class="form-control input-xs text-right"></td>'+
+                '<td class="par-qty-cell"><input required type="text" name="qty[]" id="qty'+id+'" value="" class="form-control input-xs text-right"></td>'+
+                '<td class="par-uom-cell">'+uom+'</td>'+
+                '<td class="par-cost-cell"><input type="text" id="cost_'+id+'" name="cost[]" class="form-control input-xs text-right" value="'+cost+'"></td>'+
                 transferValueCell+
                 agingCell+
                 '<td class="wd-10p"><button class="btn btn-danger btn-sm" onclick=\"removeItem('+id+');\"><i class="fa fa-trash"></i></button></td>'+
@@ -145,10 +157,10 @@
                 '<td class="wd-10p">'+id+'</td>'+
                 '<td class="wd-10p">'+stockcode+'</td>'+
                 '<td class="wd-30p">'+desc+'</td>'+
-                '<td class="wd-20p"><input type="text" name="item_serial_no[]" id="item_serial_no'+id+'" value="' + serial + '" class="form-control input-xs text-right"></td>'+
-                '<td class="wd-10p"><input type="text" name="qty[]" id="qty'+id+'" value="'+qty+'" class="form-control input-xs text-right"></td>'+
-                '<td class="wd-10p">'+uom+'</td>'+
-                '<td class="wd-10p"><input type="text" id="cost_'+id+'" name="cost[]" class="form-control input-xs text-right" value="'+cost+'"></td>'+
+                '<td class="par-serial-cell"><input type="text" name="item_serial_no[]" id="item_serial_no'+id+'" value="' + serial + '" class="form-control input-xs text-right"></td>'+
+                '<td class="par-qty-cell"><input type="text" name="qty[]" id="qty'+id+'" value="'+qty+'" class="form-control input-xs text-right"></td>'+
+                '<td class="par-uom-cell">'+uom+'</td>'+
+                '<td class="par-cost-cell"><input type="text" id="cost_'+id+'" name="cost[]" class="form-control input-xs text-right" value="'+cost+'"></td>'+
                 transferValueCell+
                 agingCell+
                 '<td class="wd-10p"><button class="btn btn-danger btn-sm" onclick=\"removeItem('+id+');\"><i class="fa fa-trash"></i></button></td>'+

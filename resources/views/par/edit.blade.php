@@ -12,16 +12,21 @@
         }
     }
 
-    .transfer-value-column,
-    .transfer-value-cell {
-        width: 16% !important;
-        min-width: 150px;
-    }
-
-    .transfer-value-cell input {
-        width: 100%;
-        min-width: 120px;
-    }
+    .par-item-table { table-layout: fixed; min-width: 980px; }
+    .par-item-table th, .par-item-table td { padding: .35rem .25rem; vertical-align: middle; }
+    .par-item-table .par-id-cell { width: 7%; }
+    .par-item-table .par-stock-cell { width: 9%; }
+    .par-item-table .par-description-cell { width: 23%; }
+    .par-item-table .par-serial-cell { width: 14%; }
+    .par-item-table .par-qty-cell { width: 6%; }
+    .par-item-table .par-uom-cell { width: 6%; }
+    .par-item-table .par-cost-cell { width: 9%; }
+    .par-item-table .transfer-value-column, .par-item-table .transfer-value-cell { width: 10%; }
+    .par-item-table .aging-column, .par-item-table .par-aging-cell { width: 12%; }
+    .par-item-table .par-action-cell { width: 4%; }
+    .par-item-table input { width: 100%; min-width: 0; }
+    .par-aging-cell, .aging-search-cell { white-space: normal; line-height: 1.2; font-size: .75rem; }
+    .par-aging-created { display: block; margin-top: 2px; color: #6c757d; font-size: .65rem; }
 </style>
 @endsection
 
@@ -137,19 +142,19 @@
                         <div class="form-row mg-b-10">
                             <div class="col-md-12">
                                 <div class="table-responsive">
-                                    <table class="table table-sm mg-b-0">
+                                     <table class="table table-sm mg-b-0 par-item-table">
                                         <thead class="thead-secondary">
                                             <tr>
-                                              <th class="wd-10p">ID</th>
-                                              <th class="wd-10p">Stock Code</th>
-                                              <th class="wd-30p">Description</th>
-                                              <th class="wd-20p">Serial #</th>
-                                              <th class="wd-10p">Qty</th>
-                                              <th class="wd-10p">UoM</th>
-                                              <th class="wd-10p">Cost</th>
-                                              <th class="wd-10p transfer-value-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Transfer Value</th>
-                                              <th class="wd-10p aging-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Aging</th>
-                                              <th class="wd-10p"></th>
+                                              <th class="par-id-cell">ID</th>
+                                              <th class="par-stock-cell">Stock Code</th>
+                                              <th class="par-description-cell">Description</th>
+                                              <th class="par-serial-cell">Serial #</th>
+                                              <th class="par-qty-cell">Qty</th>
+                                              <th class="par-uom-cell">UoM</th>
+                                              <th class="par-cost-cell">Cost</th>
+                                              <th class="transfer-value-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Transfer Value</th>
+                                              <th class="aging-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Aging</th>
+                                              <th class="par-action-cell"></th>
                                             </tr>
                                         </thead>
                                         @php
@@ -159,18 +164,22 @@
                                         <tbody id="addedItems">
                                             @foreach($grouped as $item)
                                                 @foreach($item as $i)
+                                                    @php
+                                                        $itemCreatedAt = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
+                                                        $savedTransferValue = $transferValues[$i->id] ?? ($i->transfer_value ?? null);
+                                                    @endphp
                                                     <tr id="tr{{$i->item_id}}">
                                                         <td style="display:none;" ><input type="text" class="form-control" name="item_id[]" value="{{$i->item_id}}"></td>
-                                                        <td class="wd-10p">{{ $i->item_id }}</td>
-                                                        <td class="wd-10p">{{ $i->stock_code }}</td>
-                                                        <td class="wd-30p">{{ $i->description }}</td>
-                                                        <td class="wd-8p"><input type="text" @if($i->serial_no != '') @endif name="item_serial_no[]" value="{{$i->detail_serial_no}}" class="form-control input-xs text-right"></td>
-                                                        <td class="wd-8p"><input type="text" @if($i->serial_no != '') @endif name="qty[]" value="{{$i->qty}}" class="form-control input-xs text-right"></td>
-                                                        <td class="wd-10p">{{ $i->uom }}</td>
-                                                        <td class="wd-10p" data-purchase-date="{{ $i->created_at ?? '' }}"><input type="text" name="cost[]" class="form-control input-xs text-right" value="{{$i->cost}}"></td>
-                                                        <td class="wd-10p transfer-value-cell" @if($par->ptype != 'transfer') style="display:none;" @endif><input type="number" step="0.01" min="0" name="transfer_value[]" class="form-control input-xs text-right" value="{{ $i->transfer_value !== null ? $i->transfer_value : number_format($i->cost / 60, 2, '.', '') }}"></td>
-                                                        <td class="wd-10p aging-cell" @if($par->ptype != 'transfer') style="display:none;" @endif data-purchase-date="{{ $i->created_at ?? '' }}">{{ isset($i->created_at) ? \Carbon\Carbon::parse($i->created_at)->diffInMonths(\Carbon\Carbon::today()) : 0 }} mos</td>
-                                                        <td class="wd-2p"><a class="btn btn-danger btn-sm item_delete" data-did="{{$i->details_id}}" data-toggle="modal" href="#close-par-item"><i class="fa fa-trash"></i></a></td>
+                                                        <td class="par-id-cell">{{ $i->item_id }}</td>
+                                                        <td class="par-stock-cell">{{ $i->stock_code }}</td>
+                                                        <td class="par-description-cell">{{ $i->description }}</td>
+                                                        <td class="par-serial-cell"><input type="text" @if($i->serial_no != '') @endif name="item_serial_no[]" value="{{$i->detail_serial_no}}" class="form-control input-xs text-right"></td>
+                                                        <td class="par-qty-cell"><input type="text" @if($i->serial_no != '') @endif name="qty[]" value="{{$i->qty}}" class="form-control input-xs text-right"></td>
+                                                        <td class="par-uom-cell">{{ $i->uom }}</td>
+                                                        <td class="par-cost-cell" data-purchase-date="{{ $itemCreatedAt ?? '' }}"><input type="text" name="cost[]" class="form-control input-xs text-right" value="{{$i->cost}}"></td>
+                                                        <td class="wd-10p transfer-value-cell" @if($par->ptype != 'transfer') style="display:none;" @endif><input type="number" step="0.01" min="0" name="transfer_value[]" class="form-control input-xs text-right" data-saved-value="{{ $savedTransferValue !== null ? '1' : '0' }}" value="{{ $savedTransferValue !== null ? $savedTransferValue : number_format($i->cost / 60, 2, '.', '') }}"></td>
+                                                        <td class="par-aging-cell aging-cell" @if($par->ptype != 'transfer') style="display:none;" @endif data-purchase-date="{{ $itemCreatedAt ?? '' }}">@if($itemCreatedAt){{ number_format(\Carbon\Carbon::parse($itemCreatedAt)->diffInMonths(\Carbon\Carbon::today()) / 12, 1) }} years<small class="par-aging-created">Created: {{ \Carbon\Carbon::parse($itemCreatedAt)->format('Y-m-d') }}</small>@endif</td>
+                                                        <td class="par-action-cell"><a class="btn btn-danger btn-sm item_delete" data-did="{{$i->details_id}}" data-toggle="modal" href="#close-par-item"><i class="fa fa-trash"></i></a></td>
                                                     </tr>
                                                 @endforeach
                                             @endforeach
@@ -242,7 +251,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}?v=20261002"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261016"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -278,8 +287,10 @@
                     var purchaseDate = $row.children('td').eq(7).data('purchase-date');
                     var aging = window.calculateItemAging(purchaseDate);
 
-                    $row.find('input[name="transfer_value[]"]').val(window.calculateTransferValue($cost.val(), purchaseDate).toFixed(2));
-                    $row.find('.aging-cell').text(aging.months+' mos ('+aging.days+' days)');
+                    if ($row.find('input[name="transfer_value[]"]').data('saved-value') !== 1) {
+                        $row.find('input[name="transfer_value[]"]').val(window.calculateTransferValue($cost.val(), purchaseDate).toFixed(2));
+                    }
+                    $row.find('.aging-cell').html(window.formatItemAgingHtml(aging, purchaseDate));
                 });
             }
         });
