@@ -132,8 +132,8 @@ class ParController extends Controller {
         }
 
         $datas = $datas->paginate(20);
-        $transferValues = accountabilityDetails::whereIn('id', $datas->getCollection()->pluck('id')->filter())
-            ->pluck('transfer_value', 'id');
+        $bookValues = accountabilityDetails::whereIn('id', $datas->getCollection()->pluck('id')->filter())
+            ->pluck('book_value', 'id');
         //logger($datas);
         $datas->appends([
             'doc_status' => request('doc_status'),
@@ -142,7 +142,7 @@ class ParController extends Controller {
             'accountable' => request('accountable')
         ]);
 
-        return view('par.index',compact('datas','close_data','transferValues'));
+        return view('par.index',compact('datas','close_data','bookValues'));
 
     }   
     
@@ -167,12 +167,12 @@ class ParController extends Controller {
         $items = parDetails::where('header_id',$id)->get();
         $itemCreatedDates = Items::whereIn('id', $items->pluck('item_id')->filter())
             ->pluck('created_at', 'id');
-        $transferValues = accountabilityDetails::whereIn('id', $items->pluck('id')->filter())
-            ->pluck('transfer_value', 'id');
+        $bookValues = accountabilityDetails::whereIn('id', $items->pluck('id')->filter())
+            ->pluck('book_value', 'id');
         $par   = accountabilityHeaders::where('id',$id)->first();
         $count_items = accountabilityDetails::where('header_id',$id)->count();
         // dd($par, $count_items);
-        return view('par.edit',compact('items','itemCreatedDates','transferValues','par','count_items'));
+        return view('par.edit',compact('items','itemCreatedDates','bookValues','par','count_items'));
 
     }
     
@@ -227,7 +227,7 @@ class ParController extends Controller {
         $costs = $data['cost'];
         $header_serial_no = $data['header_serial_no'] ?? null;
         $item_serial_no = $data['item_serial_no'] ?? null;
-        $transfer_values = $data['transfer_value'] ?? [];
+        $book_values = $data['book_value'] ?? [];
         $qty = $data['qty'];
         $today = Carbon::today();
         
@@ -286,7 +286,7 @@ class ParController extends Controller {
                     $items->is_lock = 0;
                     $items->added_by = Auth::user()->domainAccount;
                     $items->serial_no = $item_serial_no[$key];
-                    $items->transfer_value = null;
+                    $items->book_value = null;
                     $items->save(); 
                 }
 
@@ -353,7 +353,7 @@ class ParController extends Controller {
                     $items->t_cost = $costs[$key];
                     $items->is_lock = 0;
                     $items->serial_no = $item_serial_no[$key];
-                    $items->transfer_value = $transfer_values[$key] ?? null;
+                    $items->book_value = $book_values[$key] ?? null;
                     $items->save();
 
                 }
@@ -376,7 +376,7 @@ class ParController extends Controller {
         $costs = $data['cost'];
         $qty = $data['qty'];
         $serial_no = $data['item_serial_no'];
-        $transfer_values = $data['transfer_value'] ?? [];
+        $book_values = $data['book_value'] ?? [];
         $today = Carbon::today();
         
         $header = accountabilityHeaders::where('id',$request->hid)->update([
@@ -409,7 +409,7 @@ class ParController extends Controller {
                         'qty' => $qty[$key],
                         't_cost' => $costs[$key],
                         'serial_no' => $serial_no[$key],
-                        'transfer_value' => $request->par_type == 'transfer' ? ($transfer_values[$key] ?? null) : null,
+                        'book_value' => $request->par_type == 'transfer' ? ($book_values[$key] ?? null) : null,
                     ]);
 
                 } else {
@@ -421,7 +421,7 @@ class ParController extends Controller {
                     $items->qty = $qty[$key];
                     $items->t_cost = $costs[$key];
                     $items->serial_no = $serial_no[$key] ?? null;
-                    $items->transfer_value = $request->par_type == 'transfer' ? ($transfer_values[$key] ?? null) : null;
+                    $items->book_value = $request->par_type == 'transfer' ? ($book_values[$key] ?? null) : null;
                     $items->save();
 
                 }

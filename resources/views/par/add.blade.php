@@ -21,7 +21,7 @@
         .par-item-table .par-qty-cell { width: 5%; }
         .par-item-table .par-uom-cell { width: 5%; }
         .par-item-table .par-cost-cell { width: 9%; }
-        .par-item-table .transfer-value-column, .par-item-table .transfer-value-cell { width: 10%; }
+        .par-item-table .book-value-column, .par-item-table .book-value-cell { width: 10%; }
         .par-item-table .aging-column, .par-item-table .par-aging-cell { width: 15%; }
         .par-item-table .par-action-cell { width: 3%; }
         .par-item-table input { width: 100%; min-width: 0; }
@@ -181,7 +181,7 @@
                                           <th class="par-qty-cell">Qty</th>
                                           <th class="par-uom-cell">UoM</th>
                                           <th class="par-cost-cell">Cost</th>
-                                          <th class="wd-10p transfer-value-column" style="display:none;">Transfer Value</th>
+                                          <th class="wd-10p book-value-column" style="display:none;">Book Value</th>
                                            <th class="aging-column" style="display:none;">Aging</th>
                                            <th class="par-action-cell"></th>
                                         </tr>
@@ -225,7 +225,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}?v=20261018"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261019"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -249,16 +249,16 @@
             $('#par_type').on('change', toggleIssuanceDate);
             toggleIssuanceDate();
 
-            function toggleTransferValue() {
+            function toggleBookValue() {
                 var isTransfer = $('#par_type').val() === 'transfer';
-                $('.transfer-value-column, .transfer-value-cell, .aging-column, .aging-cell').toggle(isTransfer);
-                $('input[name="transfer_value[]"]').prop('required', isTransfer);
+                $('.book-value-column, .book-value-cell, .aging-column, .aging-cell').toggle(isTransfer);
+                $('input[name="book_value[]"]').prop('required', isTransfer);
             }
 
-            $('#par_type').on('change', toggleTransferValue);
-            toggleTransferValue();
+            $('#par_type').on('change', toggleBookValue);
+            toggleBookValue();
 
-            window.calculateTransferValue = function(cost, purchaseDate) {
+            window.calculateBookValue = function(cost, purchaseDate) {
                 var startingValue = parseFloat(cost) || 0;
                 var purchase = window.parseDepreciationDate(purchaseDate);
 

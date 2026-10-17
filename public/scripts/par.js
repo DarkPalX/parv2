@@ -49,7 +49,7 @@
         return Math.max(0, Math.round((endUtc - purchaseUtc) / (1000 * 60 * 60 * 24)));
     };
 
-    window.calculateTransferValue = function(cost, purchaseDate) {
+    window.calculateBookValue = function(cost, purchaseDate) {
         var startingValue = parseFloat(cost) || 0;
         var purchase = window.parseDepreciationDate(purchaseDate);
 
@@ -146,13 +146,13 @@
 
         var item_id = parseInt(old_value)+1;
         $('#total_items').val(parseInt(old_value)+1);
-        var transferValue = (parseFloat(cost) || 0) / 60;
+        var bookValue = (parseFloat(cost) || 0) / 60;
         var sourceRow = document.getElementById('id'+id);
-        if (sourceRow && window.calculateTransferValue) {
+        if (sourceRow && window.calculateBookValue) {
             var purchaseDate = $(sourceRow).find('.transfer-cost').data('purchase-date');
-            transferValue = window.calculateTransferValue(cost, purchaseDate);
+            bookValue = window.calculateBookValue(cost, purchaseDate);
         }
-        var transferValueCell = '<td class="wd-10p transfer-value-cell" '+($('#par_type').val() === 'transfer' ? '' : 'style="display:none;"')+'><input type="number" step="0.01" min="0" name="transfer_value[]" class="form-control input-xs text-right" value="'+transferValue.toFixed(2)+'"></td>';
+        var bookValueCell = '<td class="wd-10p book-value-cell" '+($('#par_type').val() === 'transfer' ? '' : 'style="display:none;"')+'><input type="number" step="0.01" min="0" name="book_value[]" class="form-control input-xs text-right" value="'+bookValue.toFixed(2)+'"></td>';
         var aging = window.calculateItemAging ? window.calculateItemAging($(sourceRow).find('.transfer-cost').data('purchase-date')) : { years: 0, remainingMonths: 0 };
         var agingText = window.formatItemAgingHtml ? window.formatItemAgingHtml(aging, $(sourceRow).find('.transfer-cost').data('purchase-date')) : '0.0 years';
         var agingCell = '<td class="par-aging-cell aging-cell" '+($('#par_type').val() === 'transfer' ? '' : 'style="display:none;"')+'>'+agingText+'</td>';
@@ -167,7 +167,7 @@
                 '<td class="par-qty-cell"><input required type="text" name="qty[]" id="qty'+id+'" value="" class="form-control input-xs text-right"></td>'+
                 '<td class="par-uom-cell">'+uom+'</td>'+
                 '<td class="par-cost-cell"><input type="text" id="cost_'+id+'" name="cost[]" class="form-control input-xs text-right" value="'+cost+'"></td>'+
-                transferValueCell+
+                bookValueCell+
                 agingCell+
                 '<td class="wd-10p"><button class="btn btn-danger btn-sm" onclick=\"removeItem('+id+');\"><i class="fa fa-trash"></i></button></td>'+
                 '</tr>');
@@ -181,15 +181,15 @@
                 '<td class="par-qty-cell"><input type="text" name="qty[]" id="qty'+id+'" value="'+qty+'" class="form-control input-xs text-right"></td>'+
                 '<td class="par-uom-cell">'+uom+'</td>'+
                 '<td class="par-cost-cell"><input type="text" id="cost_'+id+'" name="cost[]" class="form-control input-xs text-right" value="'+cost+'"></td>'+
-                transferValueCell+
+                bookValueCell+
                 agingCell+
                 '<td class="wd-10p"><button class="btn btn-danger btn-sm" onclick=\"removeItem('+id+');\"><i class="fa fa-trash"></i></button></td>'+
                 '</tr>');
         }
 
         if ($('#par_type').val() === 'transfer') {
-            $('#tr'+id+' .transfer-value-cell').show();
-            $('#tr'+id+' input[name="transfer_value[]"]').prop('required', true);
+            $('#tr'+id+' .book-value-cell').show();
+            $('#tr'+id+' input[name="book_value[]"]').prop('required', true);
         }
 
     }

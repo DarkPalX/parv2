@@ -21,7 +21,7 @@
     .par-item-table .par-qty-cell { width: 5%; }
     .par-item-table .par-uom-cell { width: 5%; }
     .par-item-table .par-cost-cell { width: 9%; }
-    .par-item-table .transfer-value-column, .par-item-table .transfer-value-cell { width: 10%; }
+    .par-item-table .book-value-column, .par-item-table .book-value-cell { width: 10%; }
     .par-item-table .aging-column, .par-item-table .par-aging-cell { width: 15%; }
     .par-item-table .par-action-cell { width: 3%; }
     .par-item-table input { width: 100%; min-width: 0; }
@@ -163,7 +163,7 @@
                                               <th class="par-qty-cell">Qty</th>
                                               <th class="par-uom-cell">UoM</th>
                                               <th class="par-cost-cell">Cost</th>
-                                              <th class="transfer-value-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Transfer Value</th>
+                                              <th class="book-value-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Book Value</th>
                                               <th class="aging-column" @if($par->ptype != 'transfer') style="display:none;" @endif>Aging</th>
                                               <th class="par-action-cell"></th>
                                             </tr>
@@ -177,7 +177,7 @@
                                                 @foreach($item as $i)
                                                     @php
                                                         $itemCreatedAt = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
-                                                        $savedTransferValue = $transferValues[$i->id] ?? ($i->transfer_value ?? null);
+                                                        $savedBookValue = $bookValues[$i->id] ?? ($i->book_value ?? null);
                                                     @endphp
                                                     <tr id="tr{{$i->item_id}}">
                                                         <td style="display:none;" ><input type="text" class="form-control" name="item_id[]" value="{{$i->item_id}}"></td>
@@ -188,7 +188,7 @@
                                                         <td class="par-qty-cell"><input type="text" @if($i->serial_no != '') @endif name="qty[]" value="{{$i->qty}}" class="form-control input-xs text-right"></td>
                                                         <td class="par-uom-cell">{{ $i->uom }}</td>
                                                         <td class="par-cost-cell" data-purchase-date="{{ $itemCreatedAt ?? '' }}"><input type="text" name="cost[]" class="form-control input-xs text-right" value="{{$i->cost}}"></td>
-                                                        <td class="wd-10p transfer-value-cell" @if($par->ptype != 'transfer') style="display:none;" @endif><input type="number" step="0.01" min="0" name="transfer_value[]" class="form-control input-xs text-right" data-saved-value="{{ $savedTransferValue !== null ? '1' : '0' }}" value="{{ $savedTransferValue !== null ? $savedTransferValue : number_format($i->cost / 60, 2, '.', '') }}"></td>
+                                                        <td class="wd-10p book-value-cell" @if($par->ptype != 'transfer') style="display:none;" @endif><input type="number" step="0.01" min="0" name="book_value[]" class="form-control input-xs text-right" data-saved-value="{{ $savedBookValue !== null ? '1' : '0' }}" value="{{ $savedBookValue !== null ? $savedBookValue : number_format($i->cost / 60, 2, '.', '') }}"></td>
                                                         <td class="par-aging-cell aging-cell" @if($par->ptype != 'transfer') style="display:none;" @endif data-purchase-date="{{ $itemCreatedAt ?? '' }}">@if($itemCreatedAt){{ number_format(\Carbon\Carbon::parse($itemCreatedAt)->diffInMonths(\Carbon\Carbon::today()) / 12, 1) }} years<small class="par-aging-created">Created: {{ \Carbon\Carbon::parse($itemCreatedAt)->format('Y-m-d') }}</small>@endif</td>
                                                         <td class="par-action-cell"><a class="btn btn-danger btn-sm item_delete" data-did="{{$i->details_id}}" data-toggle="modal" href="#close-par-item"><i class="fa fa-trash"></i></a></td>
                                                     </tr>
@@ -262,7 +262,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}?v=20261018"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261019"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>
@@ -288,18 +288,18 @@
             $('#issuance_date').prop('required', isFirstUser);
 
             var isTransfer = $('#par_type').val() === 'transfer';
-            $('.transfer-value-column, .transfer-value-cell, .aging-column, .aging-cell').toggle(isTransfer);
-            $('input[name="transfer_value[]"]').prop('required', isTransfer);
+            $('.book-value-column, .book-value-cell, .aging-column, .aging-cell').toggle(isTransfer);
+            $('input[name="book_value[]"]').prop('required', isTransfer);
 
-            if (isTransfer && window.calculateTransferValue && window.calculateItemAging) {
+            if (isTransfer && window.calculateBookValue && window.calculateItemAging) {
                 $('#addedItems tr').each(function(){
                     var $row = $(this);
                     var $cost = $row.find('input[name="cost[]"]');
                     var purchaseDate = $row.children('td').eq(7).data('purchase-date');
                     var aging = window.calculateItemAging(purchaseDate);
 
-                    if ($row.find('input[name="transfer_value[]"]').data('saved-value') !== 1) {
-                        $row.find('input[name="transfer_value[]"]').val(window.calculateTransferValue($cost.val(), purchaseDate).toFixed(2));
+                    if ($row.find('input[name="book_value[]"]').data('saved-value') !== 1) {
+                        $row.find('input[name="book_value[]"]').val(window.calculateBookValue($cost.val(), purchaseDate).toFixed(2));
                     }
                     $row.find('.aging-cell').html(window.formatItemAgingHtml(aging, purchaseDate));
                 });
