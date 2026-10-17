@@ -134,6 +134,8 @@ class ParController extends Controller {
         $datas = $datas->paginate(20);
         $bookValues = accountabilityDetails::whereIn('id', $datas->getCollection()->pluck('id')->filter())
             ->pluck('book_value', 'id');
+        $itemCreatedDates = Items::whereIn('id', $datas->getCollection()->pluck('item_id')->filter())
+            ->pluck('created_at', 'id');
         //logger($datas);
         $datas->appends([
             'doc_status' => request('doc_status'),
@@ -142,16 +144,20 @@ class ParController extends Controller {
             'accountable' => request('accountable')
         ]);
 
-        return view('par.index',compact('datas','close_data','bookValues'));
+        return view('par.index',compact('datas','close_data','bookValues','itemCreatedDates'));
 
     }   
     
     public function details($par){
         $par_details = parDetails::where('header_id','=',$par)->get();
+        $bookValues = accountabilityDetails::whereIn('id', $par_details->pluck('id')->filter())
+            ->pluck('book_value', 'id');
+        $itemCreatedDates = Items::whereIn('id', $par_details->pluck('item_id')->filter())
+            ->pluck('created_at', 'id');
         // dd($par_details);
         $par_items = accountabilityDetails::where('header_id','=',$par)->get();
         // dd($par_details, $par_items);
-        return view('par.details',compact('par_details','par_items'));
+        return view('par.details',compact('par_details','par_items','bookValues','itemCreatedDates'));
 
     }
 

@@ -253,7 +253,14 @@
                                         </td>
                                         <td>{{ $i->qty <= 0 ? 0 : $i->qty }}</td>
                                         <td>{{ number_format($i->cost,2) }}</td>
-                                        @php $bookValue = $bookValues[$i->id] ?? ($i->book_value ?? null); @endphp
+                                        @php
+                                            $bookValue = $bookValues[$i->id] ?? ($i->book_value ?? null);
+                                            if ($bookValue === null) {
+                                                $purchaseDate = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
+                                                $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
+                                                $bookValue = max(0, (float) $i->cost - (($ageInDays / 365) * ((float) $i->cost / 5)));
+                                            }
+                                        @endphp
                                         <td>{{ $bookValue !== null ? number_format($bookValue, 2) : '—' }}</td>
                                         
                                         <td>
