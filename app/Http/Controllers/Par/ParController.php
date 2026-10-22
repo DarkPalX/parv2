@@ -261,15 +261,8 @@ class ParController extends Controller {
                 'cis_si_no'       => $request->cis_si_no, 
                 'serial_no'       => $request->header_serial_no,
                 'safety'          => $request->safety,
-                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code,
-                // 'new_ref_code'    => $new_ref_code
+                'new_ref_code'    => $new_ref_code,
             ]);
-
-            if (now()->lt('2026-10-01')) {
-                $header->update([
-                    'new_ref_code' => $header->id, // or your specific helper logic
-                ]);
-            }
 
             if($header) {
                 foreach($items as $key => $i){
@@ -320,14 +313,8 @@ class ParController extends Controller {
                 'po_no'           => $request->po_no,
                 'cis_si_no'       => $request->cis_si_no, 
                 'serial_no'       => $request->header_serial_no,
-                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
+                'new_ref_code' => $new_ref_code
             ]);
-            
-            if (now()->lt('2026-10-01')) {
-                $header->update([
-                    'new_ref_code' => $header->id, // or your specific helper logic
-                ]);
-            }
 
             if($query){
 
@@ -462,7 +449,7 @@ class ParController extends Controller {
             'p_location'      => $request->location,
             'p_site'          => $request->site,
             'doc_ref'         => $request->doc_ref,
-            'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
+            'new_ref_code' => $new_ref_code
         ]);
 
         if($header){
@@ -716,7 +703,7 @@ class ParController extends Controller {
                 'p_location' => $source_header->p_location,
                 'p_site' => $source_header->p_site,
                 'doc_ref' => $source_header->doc_ref,
-                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
+                'new_ref_code' => $new_ref_code
             ]);
 
         
@@ -752,7 +739,7 @@ class ParController extends Controller {
                 'p_location'      => $source_header->p_location,
                 'p_site'          => $source_header->p_site,
                 'doc_ref'         => $source_header->doc_ref,
-                'new_ref_code' => now()->lt(now()->parse('2026-10-01')->startOfDay()) ? null : $new_ref_code
+                'new_ref_code' => $new_ref_code
         ]);
         
         foreach($req->item_ids as $key => $ids){
