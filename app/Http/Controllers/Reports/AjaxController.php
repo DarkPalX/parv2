@@ -118,11 +118,13 @@ class AjaxController extends Controller
                                         <th style='width:6%;'> Par #</th>
                                         <th style='width:15%;'> Accountable </th>
                                         <th style='width:15%;'> Doc Date </th>
+                                        <th style='width:15%;'> Issuance Date </th>
                                         <th style='width:9%;'> Aging </th>
                                         <th style='width:10%;'> Serial # </th>
                                         <th style='width:12%;'> Batch/QR # </th>
                                         <th style='width:10%;'> Stock Code </th>
                                         <th style='width:28%;'> Description </th>
+                                        <th style='width:10%;'> Expense Type </th>
                                         <th style='width:20%;'> Department </th>
                                         <th style='width:5%;'> Qty </th>
                                         <th style='width:7%;'> Cost </th>
@@ -155,11 +157,13 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.($d->issuance_date ?? $d->document_date).'</td>'.
                                         '<td>'.$financialValues['aging'].'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'.
                                         '<td>'.$d->description.'</td>'.
+                                        '<td>'.($d->expense_type ?? '').'</td>'.
                                         '<td>'.$d->dept.'</td>'.
                                         '<td class="text-right">'.$d->qty.'</td>'.
                                         '<td class="text-right">'.$d->cost.'</td>'.
@@ -244,11 +248,13 @@ class AjaxController extends Controller
                                             <th class='wd-5p'> Par #</th>
                                             <th class='wd-20p'> Accountable </th>
                                             <th class='wd-10p'> Doc Date </th>
+                                            <th class='wd-10p'> Issuance Date </th>
                                             <th class='wd-8p'> Aging </th>
                                             <th class='wd-10p'> Serial # </th>
                                             <th class='wd-12p'> Batch/QR # </th>
                                             <th class='wd-10p'> Stock Code </th>
                                             <th class='wd-30p'> Description </th>
+                                            <th class='wd-10p'> Expense Type </th>
                                             <th class='wd-20p'> Department </th>
                                             <th class='wd-5p'> Doc Status </th>
                                             <th class='wd-5p'> Item Status </th>
@@ -284,11 +290,13 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.($d->issuance_date ?? $d->document_date).'</td>'.
                                         '<td>'.$financialValues['aging'].'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'.
                                         '<td>'.$d->description.'</td>'.
+                                        '<td>'.($d->expense_type ?? '').'</td>'.
                                         '<td>'.$d->dept.'</td>'.
                                         '<td>'.strtoupper($d->doc_status).'</td>'.
                                         '<td>'.strtoupper($d->status).'</td>'.
@@ -363,10 +371,12 @@ class AjaxController extends Controller
                                             <th class='wd-5p'> Par #</th>
                                             <th class='wd-20p'> Accountable </th>
                                             <th class='wd-10p'> Doc Date </th>
+                                            <th class='wd-10p'> Issuance Date </th>
                                             <th class='wd-10p'> Serial # </th>
                                             <th class='wd-12p'> Batch/QR # </th>
                                             <th class='wd-10p'> Stock Code </th>
                                             <th class='wd-30p'> Description </th>
+                                            <th class='wd-10p'> Expense Type </th>
                                             <th class='wd-20p'> Department </th>
                                             <th class='wd-5p'> Doc Status </th>
                                             <th class='wd-5p'> Item Status </th>
@@ -389,10 +399,12 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.($d->issuance_date ?? $d->document_date).'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'. 
                                         '<td>'.$d->description.'</td>'.
+                                        '<td>'.($d->expense_type ?? '').'</td>'.
                                         '<td>'.$d->dept.'</td>'.
                                         '<td>'.strtoupper($d->doc_status).'</td>'.
                                         '<td>'.strtoupper($d->status).'</td>'.
@@ -455,10 +467,12 @@ class AjaxController extends Controller
                                             <th class='wd-5p'> Par #</th>
                                             <th class='wd-20p'> Accountable </th>
                                             <th class='wd-10p'> Doc Date </th>
+                                            <th class='wd-10p'> Issuance Date </th>
                                             <th class='wd-10p'> Serial # </th>
                                             <th class='wd-12p'> Batch/QR # </th>
                                             <th class='wd-10p'> Stock Code </th>
                                             <th class='wd-30p'> Description </th>
+                                            <th class='wd-10p'> Expense Type </th>
                                             <th class='wd-20p'> Department </th>
                                             <th class='wd-5p'> Doc Status </th>
                                             <th class='wd-5p'> Item Status </th>
@@ -481,10 +495,12 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.($d->issuance_date ?? $d->document_date).'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'. 
                                         '<td>'.$d->description.'</td>'.
+                                        '<td>'.($d->expense_type ?? '').'</td>'.
                                         '<td>'.$d->dept.'</td>'.
                                         '<td>'.strtoupper($d->doc_status).'</td>'.
                                         '<td>'.strtoupper($d->status).'</td>'.
@@ -577,10 +593,12 @@ class AjaxController extends Controller
                                         <th style='width:6%;'> Par #</th>
                                         <th style='width:15%;'> Accountable </th>
                                         <th style='width:15%;'> Doc Date </th>
+                                        <th style='width:15%;'> Issuance Date </th>
                                         <th style='width:10%;'> Serial # </th>
                                         <th style='width:12%;'> Batch/QR # </th>
                                         <th style='width:10%;'> Stock Code </th>
                                         <th style='width:28%;'> Description </th>
+                                        <th style='width:10%;'> Expense Type </th>
                                         <th style='width:20%;'> Department </th>
                                         <th style='width:5%;'> Qty </th>
                                         <th style='width:7%;'> Cost </th>
@@ -599,10 +617,12 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.($d->issuance_date ?? $d->document_date).'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'.
                                         '<td>'.$d->description.'</td>'.
+                                        '<td>'.($d->expense_type ?? '').'</td>'.
                                         '<td>'.$d->dept.'</td>'.
                                         '<td class="text-right">'.$d->qty.'</td>'.
                                         '<td class="text-right">'.$d->cost.'</td>'.
@@ -674,10 +694,12 @@ class AjaxController extends Controller
                                             <th class='wd-5p'> Par #</th>
                                             <th class='wd-20p'> Accountable </th>
                                             <th class='wd-10p'> Doc Date </th>
+                                            <th class='wd-10p'> Issuance Date </th>
                                             <th class='wd-10p'> Serial # </th>
                                             <th class='wd-12p'> Batch/QR # </th>
                                             <th class='wd-10p'> Stock Code </th>
                                             <th class='wd-30p'> Description </th>
+                                            <th class='wd-10p'> Expense Type </th>
                                             <th class='wd-20p'> Department </th>
                                             <th class='wd-5p'> Doc Status </th>
                                             <th class='wd-5p'> Item Status </th>
@@ -699,10 +721,12 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.($d->issuance_date ?? $d->document_date).'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'.
                                         '<td>'.$d->description.'</td>'.
+                                        '<td>'.($d->expense_type ?? '').'</td>'.
                                         '<td>'.$d->dept.'</td>'.
                                         '<td>'.strtoupper($d->doc_status).'</td>'.
                                         '<td>'.strtoupper($d->status).'</td>'.

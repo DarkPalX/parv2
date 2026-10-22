@@ -191,7 +191,8 @@ Route::group(['middleware' => ['authenticated', 'rolecheck']], function(){
 	
 
 	Route::get('/export/personnel/{from}/{to}','Reports\ExportController@personnel_par');
-	Route::get('/export/per-personnel/{emp}/{from}/{to}','Reports\ExportController@per_personnel_par');
+	Route::get('/export/per-personnel/{emp}/{from?}/{to?}','Reports\ExportController@per_personnel_par');
+	Route::get('/export/per-person/{emp}/{from?}/{to?}','Reports\ExportController@per_personnel_par');
 	Route::get('/export/common/{from}/{to}','Reports\ExportController@department_par');
 	Route::get('/export/per-common/{dept?}/{from}/{to}','Reports\ExportController@per_department_par');
 	Route::get('/export/doc/{status}/{from}/{to}','Reports\ExportController@doc_status');

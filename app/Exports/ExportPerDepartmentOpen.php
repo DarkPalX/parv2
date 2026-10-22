@@ -25,8 +25,8 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
     {
         if ($this->r->dept == 'ALL') {
             $collection = parDetails::select(
-                'dept', 'accountable', 'header_id', 'document_date', 'serial_no', 
-                'doc_ref', 'stock_code', 'description', 'doc_status', 'status', 
+                'dept', 'accountable', 'header_id', 'document_date', 'issuance_date', 'serial_no',
+                'doc_ref', 'stock_code', 'description', 'expense_type', 'doc_status', 'status',
                 'qty', 't_cost', 'created_at', 'added_by'
             )
             ->where('status', 'OPEN')
@@ -36,7 +36,7 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
 
             return $collection->map(function ($row) {
                 $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
-                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $row->issuance_date ?? $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->expense_type ?? '', $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
             });
         } 
         else {
@@ -52,10 +52,12 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
                 'accountable',
                 'header_id',
                 'document_date',
+                'issuance_date',
                 'serial_no',
                 'doc_ref',
                 'stock_code',
                 'description',
+                'expense_type',
                 'doc_status',
                 'status',
                 'qty',
@@ -76,7 +78,7 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
  
             return $collection->map(function ($row) {
                 $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
-                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $row->issuance_date ?? $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->expense_type ?? '', $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
             });
 
             
@@ -114,11 +116,13 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
             'Accountable',
             'Par #',            
             'Document Date',
+            'Issuance Date',
             'Aging',
             'Serial #',
             'Batch/QR #',
             'Stock Code',
-            'Description',            
+            'Description',
+            'Expense Type',
             'Document Status',
             'Item Status',
             'Qty',

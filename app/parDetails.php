@@ -19,6 +19,16 @@ class parDetails extends Model
     
 	public $table='v_par_details';
 
+	public function header()
+	{
+		return $this->belongsTo('App\\accountabilityHeaders', 'header_id', 'id');
+	}
+
+	public function itemRecord()
+	{
+		return $this->belongsTo('App\\Items', 'item_id', 'id');
+	}
+
 	public function getRefcodeAttribute(){
 		$ref = $this->parRefCode($this->header_id);
 		return "{$ref}";

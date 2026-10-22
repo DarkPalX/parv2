@@ -141,11 +141,13 @@
                         <th>Accountable</th>
                         <th>Refcode</th>
                         <th>Date</th>
+                        <th>Issuance Date</th>
                         <th>Aging</th>
                         <th>Serial#</th>
                         <th>Ref Doc</th>
                         <th>Stock Code</th>
                         <th>Description</th>
+                        <th>Expense Type</th>
                         <th>PAR Status</th>
                         <th>Item Status</th>
                         <th>Qty</th>
@@ -167,11 +169,13 @@
                             <td>{{$d->accountable}}</td>
                             <td>{{$d->refcode}}</td>                    
                             <td>{{$d->document_date}}</td>
+                            <td>{{$d->issuance_date ?? $d->document_date}}</td>
                             <td class="report-aging">{{$financialValues['aging']}}</td>
                             <td>{{$d->detail_serial_no}}</td>
                             <td>{{$d->doc_ref}}</td>
                             <td>{{$d->stock_code}}</td>
                             <td>{{$d->description}}</td>                    
+                            <td>{{$d->expense_type ?? ''}}</td>
                             <td>{{strtoupper($d->doc_status)}}</td>
                             <td>{{strtoupper($d->status)}}</td>
                             <td class="report-number">{{$d->qty}}</td>
