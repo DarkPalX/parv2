@@ -167,7 +167,7 @@
                             <td>{{$d->accountable}}</td>
                             <td>{{$d->refcode}}</td>                    
                             <td>{{$d->document_date}}</td>
-                            <td class="report-aging">{{$financialValues['elapsed_months']}} mos</td>
+                            <td class="report-aging">{{$financialValues['aging']}}</td>
                             <td>{{$d->detail_serial_no}}</td>
                             <td>{{$d->doc_ref}}</td>
                             <td>{{$d->stock_code}}</td>

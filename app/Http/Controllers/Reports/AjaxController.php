@@ -118,6 +118,7 @@ class AjaxController extends Controller
                                         <th style='width:6%;'> Par #</th>
                                         <th style='width:15%;'> Accountable </th>
                                         <th style='width:15%;'> Doc Date </th>
+                                        <th style='width:9%;'> Aging </th>
                                         <th style='width:10%;'> Serial # </th>
                                         <th style='width:12%;'> Batch/QR # </th>
                                         <th style='width:10%;'> Stock Code </th>
@@ -154,6 +155,7 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.$financialValues['aging'].'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'.
@@ -170,7 +172,7 @@ class AjaxController extends Controller
                 }
 
                         $output .= '<tr>'.
-                                        '<td colspan="10"><b>Grand Total</b></td>'.
+                                        '<td colspan="11"><b>Grand Total</b></td>'.
                                         '<td><b>'.number_format($total_cost,2).'</b></td>'.
                                         '<td><b>'.number_format($total_purchase_cost_50,2).'</b></td>'.
                                         '<td><b>'.number_format($total_book_value,2).'</b></td>'.
@@ -178,7 +180,7 @@ class AjaxController extends Controller
                                         '<td></td>'.
                                     '</tr>'.
                                     '<tr>'.
-                                        '<td colspan="12"><b>Total Remaining Book Value (OPEN PAR items)</b></td>'.
+                                        '<td colspan="13"><b>Total Remaining Book Value (OPEN PAR items)</b></td>'.
                                         '<td colspan="2"><b>'.number_format($total_book_value,2).'</b></td>'.
                                         '<td></td>'.
                                     '</tr>'.
@@ -242,6 +244,7 @@ class AjaxController extends Controller
                                             <th class='wd-5p'> Par #</th>
                                             <th class='wd-20p'> Accountable </th>
                                             <th class='wd-10p'> Doc Date </th>
+                                            <th class='wd-8p'> Aging </th>
                                             <th class='wd-10p'> Serial # </th>
                                             <th class='wd-12p'> Batch/QR # </th>
                                             <th class='wd-10p'> Stock Code </th>
@@ -281,6 +284,7 @@ class AjaxController extends Controller
                                         '<td>'.(\App\accountabilityHeaders::getNewRefCode($d->header_id) ?? $d->header_id).'</td>'.
                                         '<td>'.$d->accountable.'</td>'.
                                         '<td>'.$d->document_date.'</td>'.
+                                        '<td>'.$financialValues['aging'].'</td>'.
                                         '<td>'.$d->detail_serial_no.'</td>'.
                                         '<td>'.$d->doc_ref.'</td>'.
                                         '<td>'.$d->stock_code.'</td>'.
@@ -299,7 +303,7 @@ class AjaxController extends Controller
                 }
 
                         $output .= '<tr>'.
-                                        '<td colspan="12"><b>Grand Total</b></td>'.
+                                        '<td colspan="13"><b>Grand Total</b></td>'.
                                         '<td><b>'.number_format($total_cost,2).'</b></td>'.
                                         '<td><b>'.number_format($total_purchase_cost_50,2).'</b></td>'.
                                         '<td><b>'.number_format($total_book_value,2).'</b></td>'.
@@ -307,7 +311,7 @@ class AjaxController extends Controller
                                         '<td></td>'.
                                     '</tr>'.
                                     '<tr>'.
-                                        '<td colspan="14"><b>Total Remaining Book Value (OPEN PAR items)</b></td>'.
+                                        '<td colspan="15"><b>Total Remaining Book Value (OPEN PAR items)</b></td>'.
                                         '<td colspan="2"><b>'.number_format($total_book_value,2).'</b></td>'.
                                         '<td></td>'.
                                     '</tr>'.

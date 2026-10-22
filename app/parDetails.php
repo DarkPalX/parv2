@@ -81,12 +81,17 @@ class parDetails extends Model
 		$unitCost = max(0, (float) $cost);
 		$quantity = max(0, (float) $qty);
 		$months = 0;
+		$elapsedDays = 0;
 
 		if ($purchaseDate) {
 			try {
-				$months = min(60, max(0, Carbon::parse($purchaseDate)->diffInMonths(Carbon::today())));
+				$purchase = Carbon::parse($purchaseDate)->startOfDay();
+				$today = Carbon::today()->startOfDay();
+				$elapsedDays = max(0, $purchase->diffInDays($today));
+				$months = min(60, max(0, $purchase->diffInMonths($today)));
 			} catch (\Exception $e) {
 				$months = 0;
+				$elapsedDays = 0;
 			}
 		}
 
@@ -99,6 +104,8 @@ class parDetails extends Model
 			'book_value' => $bookValue,
 			'chargeable_cost' => max($halfPurchaseCost, $bookValue),
 			'elapsed_months' => $months,
+			'elapsed_days' => $elapsedDays,
+			'aging' => number_format($elapsedDays / 365, 1).' years',
 		];
 	}
  	

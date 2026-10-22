@@ -144,6 +144,7 @@
                         <th>Status</th>
                         <th class="tx-right">Qty</th>
                         <th class="tx-right">Book Value</th>
+                        <th class="tx-right">Aging</th>
                         <th class="tx-right">Cost</th>
                     </tr>
                 </thead>
@@ -163,15 +164,17 @@
                             <td>{{ $item->status }}</td>
                             <td class="tx-right">{{ $item->qty == '0.00' ? 0 : $item->qty }}</td>
                             @php
+                                $purchaseDate = $itemCreatedDates[$item->item_id] ?? ($item->created_at ?? null);
+                                $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
                                 $bookValue = $bookValues[$item->id] ?? ($item->book_value ?? null);
                                 if ($bookValue === null) {
-                                    $purchaseDate = $itemCreatedDates[$item->item_id] ?? ($item->created_at ?? null);
-                                    $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
                                     $bookValue = max(0, (float) $item->cost - (($ageInDays / 365) * ((float) $item->cost / 5)));
                                 }
                                 $g_book_total += $item->qty * $bookValue;
+                                $aging = number_format($ageInDays / 365, 1).' years';
                             @endphp
                             <td class="tx-right">{{ number_format($bookValue, 2) }}</td>
+                            <td class="tx-right">{{ $aging }}</td>
                             <td class="tx-right">{{ number_format($item->cost,2) }}</td>
                         </tr>
                     @endforeach
@@ -179,6 +182,7 @@
                             <th>Grand Total</th>
                             <th colspan="4"></th>
                             <th class="text-right">{{ number_format($g_book_total,2) }}</th>
+                            <th></th>
                             <th class="text-right">{{ number_format($g_total,2) }}</th>
                         </tr>
                 </tbody>

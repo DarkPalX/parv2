@@ -28,7 +28,7 @@ class ExportPerPersonal implements FromCollection, WithHeadings
 
         return $collection->map(function ($row) {
             $financialValues = parDetails::financialValues($row->cost, $row->qty, $row->created_at ?? $row->document_date);
-            return [(\App\accountabilityHeaders::getNewRefCode($row->header_id) ?? $row->header_id), $row->emp_name, $row->document_date, $financialValues['elapsed_months'].' mos', $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->dept, $row->doc_status, $row->status, $row->qty, $row->cost, $row->total, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
+            return [(\App\accountabilityHeaders::getNewRefCode($row->header_id) ?? $row->header_id), $row->emp_name, $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->dept, $row->doc_status, $row->status, $row->qty, $row->cost, $row->total, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
         });
         // return parDetails::select('header_id','emp_name','document_date','serial_no','doc_ref','stock_code','description','dept','doc_status','status','qty','cost',DB::raw('qty * cost as total'),'added_by')->where('emp_name',$this->r->emp)->whereBetween('document_date',[$this->r->from,$this->r->to])->orderBy('header_id','desc')->get();
 

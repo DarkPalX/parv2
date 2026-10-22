@@ -125,7 +125,7 @@
               }, true);
                     @endphp
 
-                    @if(in_array(false, $has_close))
+                    @if(in_array(false, $has_close) || strtolower($d[0]['doc_status']) === 'closed')
     
                     <div class="trainings-wrapper" style="border-left: 5px solid {{ $btn }};">
                         <div class="card-header d-sm-flex align-items-start justify-content-between pd-b-0 pd-l-1">
@@ -228,6 +228,7 @@
                                         <th class="wd-5p">Qty</th>
                                         <th class="wd-8p">Cost</th>
                                         <th class="wd-10p">Book Value</th>
+                                        <th class="wd-10p">Aging</th>
                                         <th class="wd-10p"></th>
                                         {{-- <th class="wd-10p">Cost</th> --}}
                                         <th>
@@ -254,14 +255,16 @@
                                         <td>{{ $i->qty <= 0 ? 0 : $i->qty }}</td>
                                         <td>{{ number_format($i->cost,2) }}</td>
                                         @php
+                                            $purchaseDate = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
+                                            $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
                                             $bookValue = $bookValues[$i->id] ?? ($i->book_value ?? null);
                                             if ($bookValue === null) {
-                                                $purchaseDate = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
-                                                $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
                                                 $bookValue = max(0, (float) $i->cost - (($ageInDays / 365) * ((float) $i->cost / 5)));
                                             }
+                                            $aging = number_format($ageInDays / 365, 1).' years';
                                         @endphp
                                         <td>{{ $bookValue !== null ? number_format($bookValue, 2) : '—' }}</td>
+                                        <td>{{ $aging }}</td>
                                         
                                         <td>
                                             
