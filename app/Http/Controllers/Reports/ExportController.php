@@ -16,6 +16,7 @@ use App\Exports\ExportPerPersonal;
 use App\Exports\ExportItemStatus;
 use App\Exports\ExportDocStatus;
 use App\Exports\ExportParv1Transactions;
+use App\Exports\ExportAllTransactions;
 
 
 
@@ -80,6 +81,24 @@ class ExportController extends Controller
             new ExportParv1Transactions($dept, $search),
             'OPEN Transaction in Par v1 '.$this->today.'.xlsx'
         );
+    }
+
+    public function all_transactions_export()
+    {
+        $export = new ExportAllTransactions();
+
+        return response()->streamDownload(function () use ($export) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, $export->headings());
+
+            foreach ($export->query()->cursor() as $row) {
+                fputcsv($handle, $export->map($row));
+            }
+
+            fclose($handle);
+        }, 'All PAR Transactions '.$this->today.'.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 
 

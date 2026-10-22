@@ -6,6 +6,15 @@
         .content {
             overflow: hidden;
         }
+        #all-transactions-loading {
+            display: none;
+            margin-top: 12px;
+        }
+        #all-transactions-loading .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 6px;
+        }
         @media print{
             .filter { display: none; }
             .b-head { display: none; }
@@ -35,7 +44,11 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">  
             <div class="card">
                 <div class="card-body">
-                     <a href="#" onclick="download_all()" class="btn btn-primary">Download All Transactions</a><br><br>
+                     <a id="download-all-transactions" href="{{ route('report.all_transactions_export') }}" class="btn btn-primary">Download All Transactions</a>
+                     <div id="all-transactions-loading" class="alert alert-info">
+                         <span class="spinner-border" role="status" aria-hidden="true"></span>
+                         Preparing CSV download in batches. Please keep this page open...
+                     </div><br><br>
                      <div class="alert alert-success" role="alert"  style="display:none;>
                          <span style="color:green;" id="success_remark">Success. Please come back after 1-2 hours for the generated file.</span>
                     </div>
@@ -86,6 +99,11 @@
     <script src="{{ asset('scripts/report.js') }}"></script>
 
     <script type="text/javascript">
+        $('#download-all-transactions').on('click', function(){
+            $(this).addClass('disabled').attr('aria-disabled', 'true').text('Preparing download...');
+            $('#all-transactions-loading').show();
+        });
+
         function download_all(){
             setTimeout(
               function() 

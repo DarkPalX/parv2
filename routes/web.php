@@ -176,6 +176,7 @@ Route::group(['middleware' => ['authenticated', 'rolecheck']], function(){
 	// Route::get('/export/per_department_export/{dept}','Reports\ExportController@per_department_export')->name('report.export_department');
 	Route::get('/report/parv1_transactions','Reports\ReportController@parv1_transactions')->name('report.parv1_transactions');
 	Route::get('/export/parv1_transactions_export', 'Reports\ExportController@parv1_transactions_export')->name('report.parv1_transactions_export');
+	Route::get('/export/all-transactions', 'Reports\ExportController@all_transactions_export')->name('report.all_transactions_export');
 	// Route::get('/export/parv1_transactions_export/{dept}/{search}','Reports\ExportController@parv1_transactions_export')->name('report.parv1_transactions_export');
 	
 	//Route::get('/report/department','Reports\ReportController@par_department');
