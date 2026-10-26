@@ -161,11 +161,39 @@ class ParController extends Controller {
 
     }
 
-    public function items_per_employee($id)
+    public function items_per_employee(Request $request, $id)
     {
-        
-        $datas = parDetails::where('employee_id',$id)->get();
-        return view('par.items_per_employee',compact('datas'));
+        $sort = $request->input('sort', 'oldest');
+        $statusFilter = strtolower($request->input('status', 'open'));
+
+        if (!in_array($sort, ['oldest', 'latest'])) {
+            $sort = 'oldest';
+        }
+
+        if (!in_array($statusFilter, ['open', 'closed', 'all'])) {
+            $statusFilter = 'open';
+        }
+
+        $datas = parDetails::where('employee_id', $id)
+            ->when($statusFilter === 'open', function ($query) {
+                $query->where(function ($query) {
+                    $query->whereNull('status')
+                        ->orWhereRaw("LOWER(status) <> 'closed'");
+                })->where(function ($query) {
+                    $query->whereNull('doc_status')
+                        ->orWhereRaw("LOWER(doc_status) <> 'closed'");
+                });
+            })
+            ->when($statusFilter === 'closed', function ($query) {
+                $query->where(function ($query) {
+                    $query->whereRaw("LOWER(status) = 'closed'")
+                        ->orWhereRaw("LOWER(doc_status) = 'closed'");
+                });
+            })
+            ->orderBy('document_date', $sort === 'oldest' ? 'asc' : 'desc')
+            ->get();
+
+        return view('par.items_per_employee', compact('datas', 'sort', 'statusFilter'));
     }
     
     public function edit($id){

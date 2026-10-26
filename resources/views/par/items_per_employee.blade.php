@@ -8,9 +8,29 @@
 <div class="container">
 <div class="row">
     <div class="mg-t-10">
+        <form method="GET" class="card mg-b-10">
+            <div class="card-body pd-15 d-flex align-items-end">
+                <div class="mg-r-20">
+                    <label for="sort" class="tx-12 tx-medium">Sort document date</label>
+                    <select id="sort" name="sort" class="form-control">
+                        <option value="oldest" {{ $sort === 'oldest' ? 'selected' : '' }}>Oldest to latest</option>
+                        <option value="latest" {{ $sort === 'latest' ? 'selected' : '' }}>Latest to oldest</option>
+                    </select>
+                </div>
+                <div class="mg-r-20">
+                    <label for="status" class="tx-12 tx-medium">Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="open" {{ $statusFilter === 'open' ? 'selected' : '' }}>Hide closed (default)</option>
+                        <option value="closed" {{ $statusFilter === 'closed' ? 'selected' : '' }}>Closed only</option>
+                        <option value="all" {{ $statusFilter === 'all' ? 'selected' : '' }}>Show all</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+        </form>
+
         @php
             $grouped = $datas->groupBy('employee_id');
-            $grouped->toArray();
         @endphp
 
         @foreach($grouped as $d)
@@ -63,8 +83,7 @@
                                 $total = 0;
                             @endphp
                             @foreach($d as $i)
-                                @php $total += $i->qty*$i->cost @endphp
-                            @if($i->status != 'CLOSED' && $i->doc_status != 'CLOSED')
+                                @php $total += $i->qty * $i->cost @endphp
                             <tr>
                                 <td class="tx-color-03 tx-normal">{{ $i->document_date }}</td>
                                 <td class="tx-medium">{{ App\accountabilityHeaders::getNewRefCode($i->refcode) ?? $i->refcode }}</td>
@@ -77,7 +96,6 @@
                                 <td class="tx-color-03 tx-normal text-right">{{ $i->cost }}</td>
                                 <td class="tx-color-03 tx-normal text-right">{{ number_format($i->qty * $i->cost, 2) }}</td>
                             </tr>
-                            @endif
                             @endforeach
                             <tr>
                                 <td colspan="8" class="tx-medium">Grand Total</td>
