@@ -27,6 +27,7 @@ class IrmsController extends Controller
         $items = $data['item_id'];
         $ppeNo = $data['request_no'];
         $qty   = $data['qty'];
+        $new_ref_code = accountabilityHeaders::generateMonthlyRefCode();
 
         $header = accountabilityHeaders::create([
             'ptype'          => 'new',
@@ -42,6 +43,7 @@ class IrmsController extends Controller
             'p_location'     => $request->p_location,
             'p_site'         => $request->p_site,
             'doc_ref'        => $request->doc_ref,
+            'new_ref_code' => $new_ref_code
         ]);
 
         if($header){
