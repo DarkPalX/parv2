@@ -19,7 +19,7 @@ class ExportAllTransactions implements FromQuery, WithMapping, WithHeadings
 
     public function map($row): array
     {
-        $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, $row->created_at ?? $row->document_date);
+        $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, parDetails::agingDate($row));
 
         return [
             (\App\accountabilityHeaders::getNewRefCode($row->header_id) ?? $row->header_id), $row->emp_name, $row->document_date, $row->issuance_date ?? $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->expense_type ?? '', $row->dept, $row->doc_status, $row->status, $row->qty, $row->t_cost, $row->total,

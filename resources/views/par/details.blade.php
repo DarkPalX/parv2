@@ -164,7 +164,7 @@
                             <td>{{ $item->status }}</td>
                             <td class="tx-right">{{ $item->qty == '0.00' ? 0 : $item->qty }}</td>
                             @php
-                                $purchaseDate = $itemCreatedDates[$item->item_id] ?? ($item->created_at ?? null);
+                                $purchaseDate = \App\parDetails::agingDate($item);
                                 $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
                                 $bookValue = $bookValues[$item->id] ?? ($item->book_value ?? null);
                                 if ($bookValue === null) {

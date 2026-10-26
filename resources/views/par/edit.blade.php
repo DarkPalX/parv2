@@ -176,7 +176,7 @@
                                             @foreach($grouped as $item)
                                                 @foreach($item as $i)
                                                     @php
-                                                        $itemCreatedAt = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
+                                                        $itemCreatedAt = \App\parDetails::agingDate($i);
                                                         $savedBookValue = $bookValues[$i->id] ?? ($i->book_value ?? null);
                                                     @endphp
                                                     <tr id="tr{{$i->item_id}}">
@@ -189,7 +189,7 @@
                                                         <td class="par-uom-cell">{{ $i->uom }}</td>
                                                         <td class="par-cost-cell" data-purchase-date="{{ $itemCreatedAt ?? '' }}"><input type="text" name="cost[]" class="form-control input-xs text-right" value="{{$i->cost}}"></td>
                                                         <td class="wd-10p book-value-cell" @if($par->ptype != 'transfer') style="display:none;" @endif><input type="number" step="0.01" min="0" name="book_value[]" class="form-control input-xs text-right" data-saved-value="{{ $savedBookValue !== null ? '1' : '0' }}" value="{{ $savedBookValue !== null ? $savedBookValue : number_format($i->cost / 60, 2, '.', '') }}"></td>
-                                                        <td class="par-aging-cell aging-cell" @if($par->ptype != 'transfer') style="display:none;" @endif data-purchase-date="{{ $itemCreatedAt ?? '' }}">@if($itemCreatedAt){{ number_format(\Carbon\Carbon::parse($itemCreatedAt)->diffInMonths(\Carbon\Carbon::today()) / 12, 1) }} years<small class="par-aging-created">Created: {{ \Carbon\Carbon::parse($itemCreatedAt)->format('Y-m-d') }}</small>@endif</td>
+                                                        <td class="par-aging-cell aging-cell" @if($par->ptype != 'transfer') style="display:none;" @endif data-purchase-date="{{ $itemCreatedAt ?? '' }}">@if($itemCreatedAt){{ number_format(\Carbon\Carbon::parse($itemCreatedAt)->diffInMonths(\Carbon\Carbon::today()) / 12, 1) }} years<small class="par-aging-created">Issued at: {{ \Carbon\Carbon::parse($itemCreatedAt)->format('Y-m-d') }}</small>@endif</td>
                                                         <td class="par-action-cell"><a class="btn btn-danger btn-sm item_delete" data-did="{{$i->details_id}}" data-toggle="modal" href="#close-par-item"><i class="fa fa-trash"></i></a></td>
                                                     </tr>
                                                 @endforeach
@@ -262,7 +262,7 @@
 @endsection
 
 @section('pagejs')
-    <script src="{{ asset('scripts/par.js') }}?v=20261019"></script>
+    <script src="{{ asset('scripts/par.js') }}?v=20261026"></script>
     <script src="{{ asset('assets/lib/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/lib/parsleyjs/parsley.min.js') }}"></script>
     <script src="{{ asset('assets/lib/select2/js/select2.min.js') }}"></script>

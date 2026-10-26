@@ -134,8 +134,6 @@ class ParController extends Controller {
         $datas = $datas->paginate(20);
         $bookValues = accountabilityDetails::whereIn('id', $datas->getCollection()->pluck('id')->filter())
             ->pluck('book_value', 'id');
-        $itemCreatedDates = Items::whereIn('id', $datas->getCollection()->pluck('item_id')->filter())
-            ->pluck('created_at', 'id');
         //logger($datas);
         $datas->appends([
             'doc_status' => request('doc_status'),
@@ -144,7 +142,7 @@ class ParController extends Controller {
             'accountable' => request('accountable')
         ]);
 
-        return view('par.index',compact('datas','close_data','bookValues','itemCreatedDates'));
+        return view('par.index',compact('datas','close_data','bookValues'));
 
     }   
     
@@ -152,12 +150,10 @@ class ParController extends Controller {
         $par_details = parDetails::where('header_id','=',$par)->get();
         $bookValues = accountabilityDetails::whereIn('id', $par_details->pluck('id')->filter())
             ->pluck('book_value', 'id');
-        $itemCreatedDates = Items::whereIn('id', $par_details->pluck('item_id')->filter())
-            ->pluck('created_at', 'id');
         // dd($par_details);
         $par_items = accountabilityDetails::where('header_id','=',$par)->get();
         // dd($par_details, $par_items);
-        return view('par.details',compact('par_details','par_items','bookValues','itemCreatedDates'));
+        return view('par.details',compact('par_details','par_items','bookValues'));
 
     }
 
@@ -199,14 +195,12 @@ class ParController extends Controller {
     public function edit($id){
 
         $items = parDetails::where('header_id',$id)->get();
-        $itemCreatedDates = Items::whereIn('id', $items->pluck('item_id')->filter())
-            ->pluck('created_at', 'id');
         $bookValues = accountabilityDetails::whereIn('id', $items->pluck('id')->filter())
             ->pluck('book_value', 'id');
         $par   = accountabilityHeaders::where('id',$id)->first();
         $count_items = accountabilityDetails::where('header_id',$id)->count();
         // dd($par, $count_items);
-        return view('par.edit',compact('items','itemCreatedDates','bookValues','par','count_items'));
+        return view('par.edit',compact('items','bookValues','par','count_items'));
 
     }
     

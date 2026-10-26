@@ -7,6 +7,7 @@ use App\StockedItems;
 use App\parDetails;
 use App\Items;
 use App\Contractor;
+use DB;
 
 class SearchController extends Controller
 {   
@@ -219,6 +220,20 @@ class SearchController extends Controller
                 ->orWhere('stock_code','LIKE',"%$search%")
                 ->orWhere('description', 'LIKE', "%$search%")
                 ->get();
+
+            $items->each(function ($item) {
+                $detail = DB::table('accountabilityDetails as ad')
+                    ->join('accountabilityHeaders as ah', 'ah.id', '=', 'ad.header_id')
+                    ->select('ad.created_at', 'ah.document_date')
+                    ->where('ad.item', $item->id)
+                    ->where('ad.status', 'OPEN')
+                    ->orderBy('ad.id', 'desc')
+                    ->first();
+
+                $item->accountability_created_at = $detail
+                    ? ($detail->created_at ?: $detail->document_date)
+                    : null;
+            });
 
         } else {
 

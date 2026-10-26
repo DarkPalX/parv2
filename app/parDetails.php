@@ -118,5 +118,30 @@ class parDetails extends Model
 			'aging' => number_format($elapsedDays / 365, 1).' years',
 		];
 	}
+
+	/**
+	 * Aging starts at the accountability detail creation date. The detail
+	 * timestamp is not present in older versions of v_par_details, so use the
+	 * detail table by details_id and finally the PAR document date as fallback.
+	 */
+	public static function agingDate($record)
+	{
+		if (!empty($record->accountability_created_at)) {
+			return $record->accountability_created_at;
+		}
+
+		if (!empty($record->detail_created_at)) {
+			return $record->detail_created_at;
+		}
+
+		if (!empty($record->details_id)) {
+			$createdAt = accountabilityDetails::where('id', $record->details_id)->value('created_at');
+			if ($createdAt) {
+				return $createdAt;
+			}
+		}
+
+		return $record->document_date;
+	}
  	
 }

@@ -255,7 +255,7 @@
                                         <td>{{ $i->qty <= 0 ? 0 : $i->qty }}</td>
                                         <td>{{ number_format($i->cost,2) }}</td>
                                         @php
-                                            $purchaseDate = $itemCreatedDates[$i->item_id] ?? ($i->created_at ?? null);
+                                            $purchaseDate = \App\parDetails::agingDate($i);
                                             $ageInDays = $purchaseDate ? \Carbon\Carbon::parse($purchaseDate)->startOfDay()->diffInDays(\Carbon\Carbon::today()->startOfDay()) : 0;
                                             $bookValue = $bookValues[$i->id] ?? ($i->book_value ?? null);
                                             if ($bookValue === null) {

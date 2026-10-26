@@ -82,7 +82,7 @@
     window.formatItemAgingHtml = function(aging, purchaseDate) {
         var created = window.parseDepreciationDate(purchaseDate);
         var createdText = created ? created.getFullYear() + '-' + String(created.getMonth() + 1).padStart(2, '0') + '-' + String(created.getDate()).padStart(2, '0') : '';
-        var createdLine = createdText ? '<small class="par-aging-created">Created: ' + createdText + '</small>' : '';
+        var createdLine = createdText ? '<small class="par-aging-created">Issued at: ' + createdText + '</small>' : '';
 
         return '<span>' + window.formatItemAging(aging) + '</span>' + createdLine;
     };

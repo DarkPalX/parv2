@@ -141,7 +141,7 @@ class AjaxController extends Controller
                 $total_book_value = 0;
                 $total_chargeable_cost = 0;
                 foreach($data as $key => $d){
-                    $financialValues = parDetails::financialValues($d->cost, $d->qty, $d->created_at ?? $d->document_date);
+                    $financialValues = parDetails::financialValues($d->cost, $d->qty, parDetails::agingDate($d));
                     if($d->qty > 0){
                         $total_cost += $d->qty*$d->cost;
                     }
@@ -274,7 +274,7 @@ class AjaxController extends Controller
                 $total_book_value = 0;
                 $total_chargeable_cost = 0;
                 foreach($data as $key => $d){
-                    $financialValues = parDetails::financialValues($d->cost, $d->qty, $d->created_at ?? $d->document_date);
+                    $financialValues = parDetails::financialValues($d->cost, $d->qty, parDetails::agingDate($d));
                     if($d->qty > 0){
                         $total_cost += $d->qty*$d->cost;
                     }

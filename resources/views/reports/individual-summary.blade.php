@@ -162,7 +162,7 @@
                     @if(isset($qry))
                     @forelse($qry as $d)
                         @php
-                            $financialValues = \App\parDetails::financialValues($d->cost, $d->qty, $d->created_at ?? $d->document_date);
+                            $financialValues = \App\parDetails::financialValues($d->cost, $d->qty, \App\parDetails::agingDate($d));
                         @endphp
                         <tr class="tx-13">
                             <td>{{$d->dept}}</td>
