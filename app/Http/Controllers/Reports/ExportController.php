@@ -10,6 +10,7 @@ use Excel;
 use App\Exports\ExportDepartmentPar;
 use App\Exports\ExportPerDepartment;
 use App\Exports\ExportPerDepartmentOpen;
+use App\Exports\ExportPerContractor;
 use App\Exports\ExportPerIndividual;
 use App\Exports\ExportPersonnelPar;
 use App\Exports\ExportPerPersonal;
@@ -70,6 +71,12 @@ class ExportController extends Controller
          ob_end_clean(); // this
          ob_start(); // and this
         return Excel::download(new ExportPerDepartmentOpen($req), 'OPEN Par Per Department '.$this->today.'.xlsx');
+    }
+
+    public function per_contractor_export(Request $req) {
+         ob_end_clean();
+         ob_start();
+        return Excel::download(new ExportPerContractor($req), 'OPEN Par Per Contractor '.$this->today.'.xlsx');
     }
 
     public function parv1_transactions_export(Request $req)

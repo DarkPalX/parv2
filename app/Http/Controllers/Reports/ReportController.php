@@ -104,6 +104,29 @@ class ReportController extends Controller {
         return view('reports.per_department', compact('qry', 'dept'));
     }
 
+    public function per_contractor(Request $request)
+    {
+        $qry = null;
+        $contractors = Contractor::orderBy('contractor_lname')
+            ->orderBy('contractor_fname')
+            ->get();
+
+        if ($request->has('contractor')) {
+            $query = parDetails::where('status', 'OPEN')
+                ->where('isContractor', 1);
+
+            if ($request->contractor !== 'ALL') {
+                $query->where('emp_name', $request->contractor);
+            }
+
+            $qry = $query->orderBy('emp_name')->paginate(30)
+                ->appends($request->query());
+        }
+
+        $contractorReport = true;
+        return view('reports.per_contractor', compact('qry', 'contractors'));
+    }
+
     // public function per_department()
     // {
     //     $qry = null;

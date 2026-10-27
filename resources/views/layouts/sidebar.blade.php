@@ -69,6 +69,7 @@
                         <li><a href="/report/download-all"><span>All PAR Transactions</span></a></li>
                         <li><a href="/report/contractor"><span>Contractor List</span></a></li>
                         <li><a href="/report/per_department"><span>PAR per Department</span></a></li>
+                        <li><a href="/report/per_contractor"><span>PAR per Contractor</span></a></li>
                         <li><a href="/report/parv1_transactions"><span>PAR v1 Transactions</span></a></li>
                     </ul>
                 </li>

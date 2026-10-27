@@ -172,7 +172,9 @@ Route::group(['middleware' => ['authenticated', 'rolecheck']], function(){
 
 	Route::get('/report/contractor','Reports\ReportController@contractor');
 	Route::get('/report/per_department','Reports\ReportController@per_department');
+	Route::get('/report/per_contractor','Reports\ReportController@per_contractor');
 	Route::get('/export/per_department_export','Reports\ExportController@per_department_export')->name('report.export_department');
+	Route::get('/export/per_contractor_export','Reports\ExportController@per_contractor_export')->name('report.export_contractor');
 	// Route::get('/export/per_department_export/{dept}','Reports\ExportController@per_department_export')->name('report.export_department');
 	Route::get('/report/parv1_transactions','Reports\ReportController@parv1_transactions')->name('report.parv1_transactions');
 	Route::get('/export/parv1_transactions_export', 'Reports\ExportController@parv1_transactions_export')->name('report.parv1_transactions_export');
