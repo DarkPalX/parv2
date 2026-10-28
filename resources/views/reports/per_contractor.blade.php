@@ -7,6 +7,7 @@
     .contractor-report { width: 100%; table-layout: fixed; }
     .contractor-report th, .contractor-report td { font-size: 11px; padding: 8px 6px; vertical-align: top; overflow-wrap: anywhere; }
     .contractor-report .number, .contractor-report .aging { white-space: nowrap; text-align: right; }
+    .contractor-dept { color: #8a94a6; font-size: 85%; font-style: italic; }
     @media print { .filter, .btnPrint, .btnCSV, .content-footer { display: none; } }
 </style>
 @endsection
@@ -36,9 +37,11 @@
                                 <option value="ALL">- ALL contractors -</option>
                                 @foreach($contractors as $contractor)
                                     @php
+                                        // Keep the legacy value for filtering, while showing the requested name format.
                                         $contractorName = $contractor->contractor_fname.','.$contractor->contractor_mname.' '.$contractor->contractor_lname;
+                                        $contractorDisplayName = $contractor->contractor_lname.', '.$contractor->contractor_fname.' '.$contractor->contractor_mname.' ('.$contractor->contractor_dept.')';
                                     @endphp
-                                    <option value="{{ $contractorName }}" @if(request('contractor') === $contractorName) selected @endif>{{ $contractorName }}</option>
+                                    <option value="{{ $contractorName }}" @if(request('contractor') === $contractorName) selected @endif>{{ $contractorDisplayName }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -70,8 +73,18 @@
         <tbody>
             @forelse($qry as $d)
                 @php($financialValues = \App\parDetails::financialValues($d->cost, $d->qty, \App\parDetails::agingDate($d)))
+                @php($contractor = $contractors->first(function ($candidate) use ($d) {
+                    return $candidate->contractor_fname.','.$candidate->contractor_mname.' '.$candidate->contractor_lname === $d->emp_name;
+                }))
                 <tr>
-                    <td>{{ $d->emp_name }}</td><td>{{ $d->accountable }}</td>
+                    <td>
+                        @if($contractor)
+                            {{ $contractor->contractor_lname }}, {{ $contractor->contractor_fname }} {{ $contractor->contractor_mname }}
+                            <small class="contractor-dept">({{ $contractor->contractor_dept }})</small>
+                        @else
+                            {{ $d->emp_name }}
+                        @endif
+                    </td><td>{{ $d->accountable }}</td>
                     <td>{{ $d->refcode }}</td><td>{{ $d->document_date }}</td>
                     <td>{{ $d->issuance_date ?? $d->document_date }}</td>
                     <td class="aging">{{ $financialValues['aging'] }}</td>
