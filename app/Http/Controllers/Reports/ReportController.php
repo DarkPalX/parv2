@@ -109,14 +109,43 @@ class ReportController extends Controller {
         $qry = null;
         $contractors = Contractor::orderBy('contractor_lname')
             ->orderBy('contractor_fname')
+            ->orderBy('contractor_mname')
             ->get();
+        $contractorDepartments = Contractor::whereNotNull('contractor_dept')
+            ->where('contractor_dept', '<>', '')
+            ->select('contractor_dept')
+            ->distinct()
+            ->orderBy('contractor_dept')
+            ->pluck('contractor_dept');
 
-        if ($request->has('contractor')) {
+        $selectedDepartments = $request->input('contractor_dept', []);
+        $selectedDepartments = is_array($selectedDepartments) ? $selectedDepartments : [$selectedDepartments];
+        $selectedDepartments = array_values(array_filter($selectedDepartments, function ($department) {
+            return is_string($department) && $department !== '' && $department !== 'ALL';
+        }));
+        $selectedContractors = $request->input('contractor', []);
+        $selectedContractors = is_array($selectedContractors) ? $selectedContractors : [$selectedContractors];
+        $selectedContractors = array_values(array_filter($selectedContractors, function ($contractor) {
+            return is_string($contractor) && $contractor !== '' && $contractor !== 'ALL';
+        }));
+
+        if ($request->has('generate') || $request->has('contractor') || $request->has('contractor_dept')) {
             $query = parDetails::where('status', 'OPEN')
                 ->where('isContractor', 1);
 
-            if ($request->contractor !== 'ALL') {
-                $query->where('emp_name', $request->contractor);
+            if ($selectedDepartments) {
+                $contractorNames = Contractor::whereIn('contractor_dept', $selectedDepartments)
+                    ->get()
+                    ->map(function ($contractor) {
+                        return $contractor->contractor_fname.','.$contractor->contractor_mname.' '.$contractor->contractor_lname;
+                    })
+                    ->all();
+
+                $query->whereIn('emp_name', $contractorNames);
+            }
+
+            if ($selectedContractors) {
+                $query->whereIn('emp_name', $selectedContractors);
             }
 
             $qry = $query->orderBy('emp_name')->paginate(30)
@@ -124,7 +153,7 @@ class ReportController extends Controller {
         }
 
         $contractorReport = true;
-        return view('reports.per_contractor', compact('qry', 'contractors'));
+        return view('reports.per_contractor', compact('qry', 'contractors', 'contractorDepartments'));
     }
 
     // public function per_department()
