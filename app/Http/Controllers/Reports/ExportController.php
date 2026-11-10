@@ -67,10 +67,23 @@ class ExportController extends Controller
     }
 
     public function per_department_export(Request $req) {
-        
-         ob_end_clean(); // this
-         ob_start(); // and this
-        return Excel::download(new ExportPerDepartmentOpen($req), 'OPEN Par Per Department '.$this->today.'.xlsx');
+        $export = new ExportPerDepartmentOpen($req);
+        $filename = 'OPEN Par Per Department '.$this->today->format('Ymd_His').'.csv';
+
+        return response()->stream(function () use ($export) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+            fputcsv($handle, $export->headings());
+
+            foreach ($export->query()->cursor() as $row) {
+                fputcsv($handle, $export->map($row));
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+        ]);
     }
 
     public function per_contractor_export(Request $req) {

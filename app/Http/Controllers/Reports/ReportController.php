@@ -94,10 +94,15 @@ class ReportController extends Controller {
                 $qry = parDetails::where('status', 'OPEN')
                     ->whereIn('employee_id', $employeeIds)
                     ->orderBy('accountable')
+                    ->orderBy('header_id')
                     ->paginate(30);
             } 
             else {
-                $qry = parDetails::where('status', 'OPEN')->orderBy('accountable')->paginate(30);
+                $qry = parDetails::where('status', 'OPEN')
+                    ->orderBy('dept')
+                    ->orderBy('accountable')
+                    ->orderBy('header_id')
+                    ->paginate(30);
             }
         }
  

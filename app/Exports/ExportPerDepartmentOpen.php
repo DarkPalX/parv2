@@ -4,11 +4,11 @@ namespace App\Exports;
 
 use App\parDetails;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ExportPerDepartmentOpen implements FromCollection, WithHeadings
+class ExportPerDepartmentOpen implements FromQuery, WithMapping, WithHeadings
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -21,93 +21,54 @@ class ExportPerDepartmentOpen implements FromCollection, WithHeadings
 
     }
 
-    public function collection()
+    public function query()
     {
-        if ($this->r->dept == 'ALL') {
-            $collection = parDetails::select(
-                'dept', 'accountable', 'header_id', 'document_date', 'issuance_date', 'serial_no',
-                'doc_ref', 'stock_code', 'description', 'expense_type', 'doc_status', 'status',
-                'qty', 't_cost', 'created_at', 'added_by'
-            )
+        $query = parDetails::select(
+            'dept', 'employee_id', 'accountable', 'header_id', 'document_date', 'issuance_date', 'detail_serial_no',
+            'doc_ref', 'stock_code', 'description', 'expense_type', 'doc_status', 'status',
+            'qty', 'cost', 'created_at', 'added_by'
+        )
             ->where('status', 'OPEN')
             ->orderBy('dept')
             ->orderBy('accountable')
-            ->get();
+            ->orderBy('header_id');
 
-            return $collection->map(function ($row) {
-                $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, parDetails::agingDate($row));
-                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $row->issuance_date ?? $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->expense_type ?? '', $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
-            });
-        } 
-        else {
-            $url = env('APP_URL') . "/parv2_latest/api/hris-get-employees-api.php?dept=" . urlencode($this->r->dept);
-            // $url = env('APP_URL') . "/parv2/api/hris-get-employees-api.php?dept=" . urlencode($this->r->dept);
-            
+        if ($this->r->dept != 'ALL') {
+            $url = env('API_URL') . "hris-get-employees-api.php?dept=" . urlencode($this->r->dept);
             $data = @file_get_contents($url);
-            
             $employeeIds = json_decode($data, true) ?: [];
-
-            $collection = parDetails::select(
-                'dept',
-                'accountable',
-                'header_id',
-                'document_date',
-                'issuance_date',
-                'serial_no',
-                'doc_ref',
-                'stock_code',
-                'description',
-                'expense_type',
-                'doc_status',
-                'status',
-                'qty',
-                't_cost',
-                'created_at',
-                'added_by'
-            )
-            ->whereIn('employee_id', $employeeIds)
-            ->where('status', 'OPEN')
-            ->orderBy('dept')
-            ->orderBy('accountable')
-            ->get();
- 
-            // Replace dept value
-            foreach ($collection as $row) {
-                $row->dept = $this->r->dept;
-            }
- 
-            return $collection->map(function ($row) {
-                $financialValues = parDetails::financialValues($row->cost ?? $row->t_cost, $row->qty, parDetails::agingDate($row));
-                return [$row->dept, $row->accountable, $row->header_id, $row->document_date, $row->issuance_date ?? $row->document_date, $financialValues['aging'], $row->serial_no, $row->doc_ref, $row->stock_code, $row->description, $row->expense_type ?? '', $row->doc_status, $row->status, $row->qty, $row->t_cost, number_format($financialValues['purchase_cost_50'], 2, '.', ''), number_format($financialValues['book_value'], 2, '.', ''), number_format($financialValues['chargeable_cost'], 2, '.', ''), $row->added_by];
-            });
-
-            
-            // return parDetails::select(
-            //     'dept', 'accountable', 'header_id', 'document_date', 'serial_no', 
-            //     'doc_ref', 'stock_code', 'description', 'doc_status', 'status', 
-            //     'qty', 't_cost', 'added_by'
-            // )
-            // ->whereIn('employee_id', $employeeIds)
-            // ->where('status', 'OPEN')
-            // ->orderBy('dept')
-            // ->orderBy('accountable')
-            // ->get();
+            $query->whereIn('employee_id', $employeeIds);
         }
+
+        return $query;
     }
 
-    // public function collection()
-    // {
-        
-    //     if($this->r->dept == 'ALL'){
-    //         return parDetails::select('dept','accountable','header_id','document_date','serial_no','doc_ref','stock_code','description','doc_status','status','qty','t_cost','added_by')->where('status','OPEN')->orderBy('dept')->orderBy('accountable')->get();
-            
-    //     }
-    //     else{
-    //         //$dept = str_replace(':', '/', $this->r->dept);        
-    //         return parDetails::select('dept','accountable','header_id','document_date','serial_no','doc_ref','stock_code','description','doc_status','status','qty','t_cost','added_by')->where('dept',$this->r->dept)->where('status','OPEN')->orderBy('dept')->orderBy('accountable')->get();
-    //     }
+    public function map($row): array
+    {
+        $financialValues = parDetails::financialValues($row->cost, $row->qty, parDetails::agingDate($row));
 
-    // }
+        return [
+            $this->r->dept == 'ALL' ? $row->dept : $this->r->dept,
+            $row->accountable,
+            $row->refcode,
+            $row->document_date,
+            $row->issuance_date ?? $row->document_date,
+            $financialValues['aging'],
+            $row->detail_serial_no,
+            $row->doc_ref,
+            $row->stock_code,
+            $row->description,
+            $row->expense_type ?? '',
+            strtoupper($row->doc_status),
+            $row->status,
+            $row->qty,
+            $row->cost,
+            number_format($financialValues['purchase_cost_50'], 2, '.', ''),
+            number_format($financialValues['book_value'], 2, '.', ''),
+            number_format($financialValues['chargeable_cost'], 2, '.', ''),
+            $row->added_by,
+        ];
+    }
 
     public function headings(): array
     {

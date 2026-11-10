@@ -117,7 +117,7 @@
                                         @if(isset($qry))
                                             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 mg-t-2">
                                                 {{-- <a class="btn btn-sm pd-x-15 btn-success btn-uppercase mg-l-5 text-white" href="{{ route('report.export_department', request()->query()) }}">Export to Excel</a> --}}
-                                                <a class="btn btn-sm pd-x-15 btn-success btn-uppercase mg-l-5 text-white" href="{{ route('report.export_department', ['dept' => $_GET['dept']]) }}">Export to Excel</a>
+                                                <a class="btn btn-sm pd-x-15 btn-success btn-uppercase mg-l-5 text-white" href="{{ route('report.export_department', ['dept' => $_GET['dept']]) }}">Export for Excel (CSV)</a>
                                                 {{-- <a class="btn btn-sm pd-x-15 btn-success btn-uppercase mg-l-5 text-white" href="{{route('report.export_department',$_GET['dept'])}}">Export to Excel</a> --}}
                                             </div>
                                         @endif
