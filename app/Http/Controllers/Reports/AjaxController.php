@@ -92,6 +92,7 @@ class AjaxController extends Controller
                 $data = $data->orderBy('header_id','desc')->get();
                 $btnExport = "<a href='/export/per-personnel/".$req->emp."/".$req->date_from."/".$req->date_to."' class='btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5 text-white btnCSV'>Export to CSV</a>";
             }
+            $data = $this->clampReportQuantities($data);
             $rows = count($data);
     
             $output =  "<div class='row'>
@@ -220,6 +221,7 @@ class AjaxController extends Controller
                 $btnExport = "<a href='/export/per-common/".$dept."/".$req->date_from."/".$req->date_to."' class='btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5 text-white btnCSV'>Export to CSV</a>";
            }
             
+            $data = $this->clampReportQuantities($data);
             $rows = count($data);
 
             $output =  "<div class='row'>
@@ -344,6 +346,7 @@ class AjaxController extends Controller
             $data = $data->whereBetween('document_date',[$req->date_from,$req->date_to])->orderBy('header_id','desc')->get();
             $btnExport = "<a href='/export/doc/".$req->d_status."/".$req->date_from."/".$req->date_to."' class='btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5 text-white btnCSV'>Export to CSV</a>";
            
+            $data = $this->clampReportQuantities($data);
             $rows = count($data);
             $output =  "<div class='row'>
                             <div class='col-md-12'>
@@ -440,6 +443,7 @@ class AjaxController extends Controller
             $data = $data->where('detail_serial_no',$req->serial_no)->whereBetween('document_date',[$req->date_from,$req->date_to])->orderBy('header_id','desc')->get();
             $btnExport = "<a href='/export/item/".$req->i_status."/".$req->date_from."/".$req->date_to."' class='btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5 text-white btnCSV'>Export to CSV</a>";
            
+            $data = $this->clampReportQuantities($data);
             $rows = count($data);
             $output =  "<div class='row'>
                             <div class='col-md-12'>
@@ -567,6 +571,7 @@ class AjaxController extends Controller
                 $data = $data->orderBy('header_id','desc')->get();
                 $btnExport = "<a href='/export/per-personnel/".$req->emp."/".$req->date_from."/".$req->date_to."' class='btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5 text-white btnCSV'>Export to CSV</a>";
             }
+            $data = $this->clampReportQuantities($data);
             $rows = count($data);
     
             $output =  "<div class='row'>
@@ -666,6 +671,7 @@ class AjaxController extends Controller
                 $btnExport = "<a href='/export/per-common/".$dept."/".$req->date_from."/".$req->date_to."' class='btn btn-sm pd-x-15 btn-primary btn-uppercase mg-l-5 text-white btnCSV'>Export to CSV</a>";
            }
             
+            $data = $this->clampReportQuantities($data);
             $rows = count($data);
 
             $output =  "<div class='row'>
@@ -752,5 +758,17 @@ class AjaxController extends Controller
                     return Response($output);
             }
         }
+    }
+
+    /**
+     * Closed items can have a negative balance after duplicate closing actions.
+     * Reports should never expose that negative balance or calculate costs from it.
+     */
+    private function clampReportQuantities($data)
+    {
+        return $data->map(function ($row) {
+            $row->qty = max(0, (float) $row->qty);
+            return $row;
+        });
     }
 }

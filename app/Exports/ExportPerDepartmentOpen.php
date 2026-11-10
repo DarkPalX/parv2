@@ -45,7 +45,8 @@ class ExportPerDepartmentOpen implements FromQuery, WithMapping, WithHeadings
 
     public function map($row): array
     {
-        $financialValues = parDetails::financialValues($row->cost, $row->qty, parDetails::agingDate($row));
+        $qty = max(0, (float) $row->qty);
+        $financialValues = parDetails::financialValues($row->cost, $qty, parDetails::agingDate($row));
 
         return [
             $this->r->dept == 'ALL' ? $row->dept : $this->r->dept,
@@ -61,7 +62,7 @@ class ExportPerDepartmentOpen implements FromQuery, WithMapping, WithHeadings
             $row->expense_type ?? '',
             strtoupper($row->doc_status),
             $row->status,
-            $row->qty,
+            $qty,
             $row->cost,
             number_format($financialValues['purchase_cost_50'], 2, '.', ''),
             number_format($financialValues['book_value'], 2, '.', ''),

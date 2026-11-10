@@ -23,6 +23,7 @@ class ExportItemStatus implements FromCollection, WithHeadings
     public function collection()
     {
         return parDetails::select('header_id','accountable','document_date','issuance_date','serial_no','doc_ref','stock_code','description','expense_type','dept','doc_status','status','qty','t_cost','added_by')->where('status',$this->r->status)->whereBetween('document_date',[$this->r->from,$this->r->to])->orderBy('header_id','desc')->get()->map(function ($row) {
+            $qty = max(0, (float) $row->qty);
             return [
                 \App\accountabilityHeaders::getNewRefCode($row->header_id) ?? $row->header_id,
                 $row->accountable,
@@ -36,7 +37,7 @@ class ExportItemStatus implements FromCollection, WithHeadings
                 $row->dept,
                 $row->doc_status,
                 $row->status,
-                $row->qty,
+                $qty,
                 $row->t_cost,
                 $row->added_by,
             ];

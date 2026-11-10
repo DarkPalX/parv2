@@ -67,9 +67,10 @@ class ExportPerContractor implements FromCollection, WithHeadings
         });
 
         return $query->orderBy('emp_name')->orderBy('header_id', 'desc')->get()->map(function ($row) use ($contractorDepartments) {
+            $qty = max(0, (float) $row->qty);
             $financialValues = parDetails::financialValues(
                 $row->cost ?? $row->t_cost,
-                $row->qty,
+                $qty,
                 parDetails::agingDate($row)
             );
 
@@ -88,7 +89,7 @@ class ExportPerContractor implements FromCollection, WithHeadings
                 $row->expense_type ?? '',
                 $row->doc_status,
                 $row->status,
-                $row->qty,
+                $qty,
                 $row->t_cost,
                 number_format($financialValues['purchase_cost_50'], 2, '.', ''),
                 number_format($financialValues['book_value'], 2, '.', ''),
